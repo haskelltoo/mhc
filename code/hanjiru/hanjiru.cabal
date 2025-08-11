@@ -1,0 +1,61 @@
+cabal-version: 3.4
+
+name: hanjiru
+version: 0
+
+build-type: Simple
+
+library
+  exposed-modules:
+    Hanjiru
+    -- Hanjiru parse-interpreters.
+    Hanjiru.Interpret
+    Hanjiru.Interpret.LR0.Fast
+    Hanjiru.Interpret.LR0.Slow
+    -- Hanjiru grammar combinator language.
+    Hanjiru.Language
+  other-modules:
+    -- Hanjiru's own guts.
+    Hanjiru.Input
+  exposed-modules:
+    -- Ancilliary stuff.
+    Knot
+  hs-source-dirs: src
+  build-depends:
+    , base ^>= 4.20
+    , containers
+    , text
+    , transformers
+  default-language: Haskell2010
+  default-extensions:
+    GADTs
+    ImportQualifiedPost
+    MultiParamTypeClasses
+    NamedFieldPuns
+    NoImplicitPrelude
+    NoStarIsType
+    RankNTypes
+    ScopedTypeVariables
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+
+executable demo
+  main-is: apps/demo/Main.hs
+  build-depends:
+    , base ^>= 4.20
+    , hanjiru
+  default-language: Haskell2010
+  default-extensions:
+    GADTs
+    ImportQualifiedPost
+    MultiParamTypeClasses
+    NoImplicitPrelude
+    NoStarIsType
+    RankNTypes
+    ScopedTypeVariables
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators

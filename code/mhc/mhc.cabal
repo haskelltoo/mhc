@@ -1,0 +1,30 @@
+cabal-version: 3.4
+
+name: mhc
+version: 0
+
+build-type: Simple
+
+library
+  exposed-modules:
+    MHC
+  other-modules:
+  hs-source-dirs: src
+  build-depends:
+    , base ^>= 4.20
+    , hanjiru
+    , mhc-haskell
+    , text
+  default-language: Haskell2010
+  default-extensions:
+    GADTs
+    ImportQualifiedPost
+    MultiParamTypeClasses
+    NamedFieldPuns
+    NoImplicitPrelude
+    NoStarIsType
+    RankNTypes
+    ScopedTypeVariables
+    TupleSections
+    TypeApplications
+    TypeOperators
