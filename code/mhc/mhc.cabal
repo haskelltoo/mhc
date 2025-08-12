@@ -12,6 +12,7 @@ library
   hs-source-dirs: src
   build-depends:
     , base ^>= 4.20
+    , ghc
     , hanjiru
     , mhc-haskell
     , text
