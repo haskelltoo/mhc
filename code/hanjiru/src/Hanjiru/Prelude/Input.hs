@@ -4,10 +4,11 @@
 {-# LANGUAGE PatternSynonyms        #-}
 {-# LANGUAGE ViewPatterns           #-}
 
-module Hanjiru.Input where
+module Hanjiru.Prelude.Input where
 
-import Prelude
+import Data.Char
 import Data.Functor.Identity
+import Data.Maybe
 
 import Data.Text      qualified
 import Data.Text.Lazy qualified

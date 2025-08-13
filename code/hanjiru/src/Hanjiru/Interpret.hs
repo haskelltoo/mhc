@@ -1,15 +1,13 @@
 module Hanjiru.Interpret
   (
     ParseVia (..)
-  , module Hanjiru.Input
+  , module Hanjiru.Prelude
   )
   where
 
-import Hanjiru.Input
-import Hanjiru.Language (Def)
-import Knot
+import Hanjiru.Language (Form)
+import Hanjiru.Prelude (Input, Knot)
 
-import Prelude
 import Data.Kind
 
 -- | 
@@ -19,9 +17,9 @@ class ParseVia algo where
   -- | Parse an input via the designated algorithm.
 
   parse ::
-        algo
+        algo info
     ->  Input input t
-    =>  Knot (Def r info t a)
+    =>  Knot (Form t a)
     ->  input
     ->  Result algo info a
 

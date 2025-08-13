@@ -1,8 +1,10 @@
 {-# LANGUAGE PolyKinds #-}
 
-module Knot where
+module Hanjiru.Prelude.Knot where
 
-import Prelude
+import Control.Applicative
+import Data.Function
+import Data.Functor
 import Control.Monad
 import Control.Monad.Fix
 import Data.Kind
@@ -19,13 +21,13 @@ data Knot (a :: k) :: Type where
 
   Knot :: (a -> Knot a) -> (a -> Knot b) -> Knot b
 
-  Bind :: a -> (a -> Knot b) -> Knot b
+  Bend :: a -> (a -> Knot b) -> Knot b
 
 instance Functor Knot where
 
   fmap f (Tie a)    = Tie (f a)
   fmap f (Knot g h) = Knot g (fmap f . h)
-  fmap f (Bind p h) = Bind p (fmap f . h)
+  fmap f (Bend p h) = Bend p (fmap f . h)
 
 instance Applicative Knot where
 
@@ -37,7 +39,7 @@ instance Monad Knot where
 
   Tie a     >>= k = k a
   Knot g h  >>= k = Knot g (h >=> k)
-  Bind p h  >>= k = Bind p (h >=> k)
+  Bend p h  >>= k = Bend p (h >=> k)
 
 instance MonadFix Knot where
 
@@ -49,7 +51,7 @@ runKnot :: MonadFix m => (forall a. a -> m a) -> Knot b -> m b
 
 runKnot _ (Tie a) = pure a
 
-runKnot eta (Bind a k) =
+runKnot eta (Bend a k) =
   runKnot eta . k =<< eta a
 
 runKnot eta (Knot f k) =

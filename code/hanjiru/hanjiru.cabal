@@ -8,18 +8,19 @@ build-type: Simple
 library
   exposed-modules:
     Hanjiru
+    -- Hanjiru grammar combinator language.
+    Hanjiru.Language
+    Hanjiru.Prelude
+    Hanjiru.Prelude.Free
+    Hanjiru.Prelude.Input
+    Hanjiru.Prelude.Knot
+  exposed-modules:
     -- Hanjiru parse-interpreters.
     Hanjiru.Interpret
     Hanjiru.Interpret.LR0.Fast
     Hanjiru.Interpret.LR0.Slow
-    -- Hanjiru grammar combinator language.
-    Hanjiru.Language
-  other-modules:
-    -- Hanjiru's own guts.
-    Hanjiru.Input
   exposed-modules:
     -- Ancilliary stuff.
-    Knot
   hs-source-dirs: src
   build-depends:
     , base ^>= 4.20
