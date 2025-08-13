@@ -1,19 +1,19 @@
 {-# LANGUAGE FlexibleContexts   #-}
 {-# LANGUAGE RecursiveDo        #-}
-{-# LANGUAGE OverloadedStrings  #-}
 
 module Main where
 
 import Hanjiru
+import Hanjiru.Prelude
 
-import Prelude
 import Data.Char
 
 main :: IO ()
 main =
   do
-    let out = parse SlowLR0 expr "A + B * C"
-    print out
+    -- let out = parse SlowLR0 expr "A + B * C"
+    -- print out
+    pure ()
 
 data Expr
   = Var String
@@ -21,7 +21,7 @@ data Expr
   | Mul Expr Expr
   deriving Show
 
-expr :: Input [String] String => Knot (Def r String String (m Expr))
+expr :: Input [String] String => Knot (Kata String Expr)
 expr = mdo
   goal <- def "goal" [sum]
 
@@ -31,7 +31,7 @@ expr = mdo
         pure $ Add a b
 
   sum <- def "sum"
-    [ add <$> sum <* "+" <*> product
+    [ Add <$> sum <* token "+" <*> product
     , product
     ]
 
@@ -39,23 +39,23 @@ expr = mdo
         pure $ Mul a b
 
   product <- def "product"
-    [ mul <$> product <* "*" <*> atom
+    [ Mul <$> product <* token "*" <*> atom
     , atom
     ]
 
   atom <- def "atom"
     [ var
-    , "(" *> sum <* ")"
+    , token "(" *> sum <* token ")"
     ]
 
   pure goal
 
-var :: Knot (Def r String String (m Expr))
+var :: Knot (Kata String Expr)
 var = def "var"
-    [ pure . Var <$> ident
+    [ Var <$> ident
     ]
 
-ident :: Def r String String String
+ident :: Kata String String
 ident = expect "ident" f
   where
     f (x:_) = isAlpha x

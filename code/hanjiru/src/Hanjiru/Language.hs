@@ -1,6 +1,9 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Hanjiru.Language
   (
-    Form (..)
+    Kata
+  , Move (..)
   
   , (<?>)
   , def
@@ -19,48 +22,41 @@ import Control.Applicative
 import Data.Functor.Identity
 import Data.String
 
-data Form t a where
+-- | 
 
-  Complete :: a -> Form t a
+type Kata t = Ap (Move t)
 
-  Scan :: (t -> Maybe a) -> Form t (a -> b) -> Form t b
+-- | The Earley parsing algorithm moves.
 
-  Predict :: [Form t a] -> Form t (a -> b) -> Form t b
+data Move t a
+  = Scan (t -> Maybe a)
+  | Predict [Kata t a]
+
+instance Functor (Move t) where
+
+  fmap f (Scan t)     = Scan (fmap f . t)
+  fmap f (Predict rs) = Predict (fmap f <$> rs)
 
 infixr 0 <?>
 
-(<?>) :: info -> [Form t a] -> Knot (Form t a)
+(<?>) :: info -> [Kata t a] -> Knot (Kata t a)
 (<?>) = def
 
-def :: info -> [Form t a] -> Knot (Form t a)
-def info alts = Bend (Predict alts $ pure id) Tie
+def :: info -> [Kata t a] -> Knot (Kata t a)
+def info alts = Bend (Ap (Predict alts) $ pure id) Tie
 
-terminal :: info -> (t -> Maybe a) -> Form t a
-terminal info t = Scan t (pure id)
+terminal :: info -> (t -> Maybe a) -> Kata t a
+terminal info t = Ap (Scan t) (pure id)
 
-instance Functor (Form t) where
-
-  fmap f (Complete a)   = Complete (f a)
-  fmap f (Scan t p)     = Scan t (fmap (f .) p)
-  fmap f (Predict r p)  = Predict r (fmap (f .) p)
-
-instance Applicative (Form t) where
-
-  pure = Complete
-
-  Complete f  <*> q = fmap f q
-  Scan t p    <*> q = Scan  t (flip <$> p <*> q)
-  Predict r p <*> q = Predict r (flip <$> p <*> q)
-
-token :: (info ~ t, Eq t) => t -> Form t t
+token :: (info ~ t, Eq t) => t -> Kata t t
 token x = expect x (== x)
 
-expect :: info -> (t -> Bool) -> Form t t
+expect :: info -> (t -> Bool) -> Kata t t
 expect info p = terminal info f
   where
     f t | p t = Just t
     f _       = Nothing
 
-instance (info ~ t, a ~ t, Eq t, IsString t) => IsString (Form t a) where
+instance (info ~ t, a ~ t, Eq t, IsString t) => IsString (Kata t a) where
 
   fromString = token . fromString

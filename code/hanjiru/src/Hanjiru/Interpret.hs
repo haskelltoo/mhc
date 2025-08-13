@@ -1,12 +1,7 @@
-module Hanjiru.Interpret
-  (
-    ParseVia (..)
-  , module Hanjiru.Prelude
-  )
-  where
+module Hanjiru.Interpret where
 
-import Hanjiru.Language (Form)
-import Hanjiru.Prelude (Input, Knot)
+import Hanjiru.Language (Kata, Move (..))
+import Hanjiru.Prelude
 
 import Data.Kind
 
@@ -19,8 +14,13 @@ class ParseVia algo where
   parse ::
         algo info
     ->  Input input t
-    =>  Knot (Form t a)
+    =>  Knot (Kata t a)
     ->  input
     ->  Result algo info a
 
   type Result algo info a :: Type
+
+type State t = Free (Move t)
+
+kataToState :: Kata t a -> State t a
+kataToState = runAp liftF
