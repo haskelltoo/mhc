@@ -69,7 +69,7 @@ runAp (eta :: forall x. f x -> g x) = go
     go (Pure a)   = pure a
     go (Ap pa pf) = flip id <$> eta pa <*> go pf
 
--- | Shortcut: run @'Ap' f@ when @f@ is already an 'Applicative' instances.
+-- | Shortcut: run @'Ap' f@ when @f@ is already an 'Applicative' instance.
 
 retractAp :: Applicative f => Ap f a -> f a
 retractAp = runAp id
