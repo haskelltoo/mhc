@@ -3,13 +3,16 @@
 
 module Hanjiru.Prelude.Free
   (
-    -- * Free Applicatives (aka Monoidal Functors)
-    Ap (..)
+    -- * ~>
+    type (~>)
+
+    -- * Applicative
+  , Ap (..)
   , runAp
   , retractAp
   , freeAp
 
-    -- * Free Monads
+    -- * Monad
   , Free (..)
   , runFree
   , liftF
@@ -21,6 +24,11 @@ import Control.Applicative
 import Control.Monad
 import Data.Function
 import Data.Kind (Type)
+
+-- | Maps between two functors. In categorical terms, these are called
+--   /natural transformations/.
+
+type f ~> g = forall x. f x -> g x
 
 -- | The free 'Applicative' (aka monoidal functor) construction.
 
@@ -62,21 +70,21 @@ instance Applicative (Ap f) where
 
 -- | Run @'Ap' f@ by interpreting each node as application in @g@.
 
-runAp :: Applicative g => (forall x. f x -> g x) -> Ap f a -> g a
-runAp (eta :: forall x. f x -> g x) = go
+runAp :: Applicative g => f ~> g -> Ap f ~> g
+runAp (eta :: f ~> g) = go
   where
-    go :: forall a. Ap f a -> g a
+    go :: Ap f ~> g
     go (Pure a)   = pure a
     go (Ap pa pf) = flip id <$> eta pa <*> go pf
 
 -- | Shortcut: run @'Ap' f@ when @f@ is already an 'Applicative' instance.
 
-retractAp :: Applicative f => Ap f a -> f a
+retractAp :: Applicative f => Ap f ~> f
 retractAp = runAp id
 
 -- | Inject @'Ap' f@ into @'Free' f@.
 
-freeAp :: Functor f => Ap f a -> Free f a
+freeAp :: Functor f => Ap f ~> Free f
 freeAp = runAp liftF
 
 -- | The free 'Monad' construction.
@@ -106,20 +114,20 @@ instance Functor f => Monad (Free f) where
 -- | Run @'Free' f@ given a natural tranformation @f -> m@. The usual intuition here is that
 --   we're interpreting a series of commands in the monad @m@.
 
-runFree :: Monad m => (forall x. f x -> m x) -> Free f a -> m a
-runFree (eta :: forall x. f x -> m x) = go
+runFree :: Monad m => f ~> m -> Free f ~> m
+runFree (eta :: f ~> m) = go
   where
-    go :: forall a. Free f a -> m a
+    go :: Free f ~> m
     go (Return a)   = pure a
     go (Bind ma k)  = eta ma >>= go . k
 
 -- | @lift@ a functor.
 
-liftF :: Functor f => f a -> Free f a
+liftF :: Functor f => f ~> Free f
 liftF ma = Bind ma Return
 
 -- | Shortcut: run @'Free' f@ when @f@ is already a 'Monad' instance.
 
-retract :: Monad f => Free f a -> f a
+retract :: Monad f => Free f ~> f
 retract (Return a)  = pure a
 retract (Bind ma k) = ma >>= retract . k
