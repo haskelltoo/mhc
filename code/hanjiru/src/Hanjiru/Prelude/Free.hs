@@ -3,7 +3,7 @@
 
 module Hanjiru.Prelude.Free
   (
-    -- * ~>
+    -- * @(~>)@
     type (~>)
 
     -- * Applicative
