@@ -18,13 +18,17 @@ module Hanjiru.Language
 
 import Hanjiru.Prelude
 
-import Control.Applicative
-import Data.Functor.Identity
 import Data.String
 
 -- | 
 
 type Kata t = Ap (Move t)
+
+instance Alternative (Ap (Move t)) where
+  
+  empty = Ap (Predict []) $ pure id
+
+  a <|> b = Ap (Predict [a, b]) $ pure id
 
 -- | The Earley parsing algorithm moves.
 
@@ -57,6 +61,8 @@ expect info p = terminal info f
     f t | p t = Just t
     f _       = Nothing
 
-instance (info ~ t, a ~ t, Eq t, IsString t) => IsString (Kata t a) where
+{-
+instance (info ~ t, a ~ t, Eq t, IsString t) => IsString (Ap (Move t) a) where
 
   fromString = token . fromString
+-}
