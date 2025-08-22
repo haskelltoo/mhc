@@ -1,8 +1,8 @@
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE PolyKinds    #-}
-
 module Hanjiru.Prelude.Free
   (
+    -- * Introduction
+    -- $intro
+
     -- * @(~>)@
     type (~>)
 
@@ -25,10 +25,18 @@ import Control.Monad
 import Data.Function
 import Data.Kind (Type)
 
+{- $intro
+
+"Hanjiru.Prelude.Free" defines some key /free constructions/.
+
+-}
+
 -- | Maps between two functors. In categorical terms, these are called
 --   /natural transformations/.
 
 type f ~> g = forall x. f x -> g x
+
+infixr 0 ~>
 
 -- | The free 'Applicative' (aka monoidal functor) construction.
 
@@ -50,23 +58,11 @@ instance Applicative (Ap f) where
 
   pure = Pure
 
+  (<*>) :: Ap f (x -> b) -> Ap f x -> Ap f b
+  -- rename @x@ so that @pf :: Ap f (a -> x -> b)@ instead of @Ap f (a -> a1 -> b)@.
+
   Pure f    <*> px = fmap f px
   Ap pa pf  <*> px = Ap pa (flip <$> pf <*> px)
-  
-  -- The following instance sig doesn't serve any crucial function. It's just here to
-  -- alpha-rename the @x@ type variable.
-  -- 
-  -- Without it:
-  --  * @px :: Ap f a@;
-  --  * @pa :: f a@;
-  --  * @pf :: Ap f (a -> a1 -> b)@, which @a@ is which?!
-  --
-  -- With it:
-  --  * @px :: Ap f x@;
-  --  * @pa :: f a@;
-  --  * @pf :: Ap f (a -> x -> b)@, much clearer, especially when looking at inferences.
-
-  (<*>) :: Ap f (x -> b) -> Ap f x -> Ap f b
 
 -- | Run @'Ap' f@ by interpreting each node as application in @g@.
 
