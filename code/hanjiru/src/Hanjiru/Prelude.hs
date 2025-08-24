@@ -12,7 +12,6 @@ module Hanjiru.Prelude
 
 import Hanjiru.Prelude.Free   as Hanjiru.Prelude
 import Hanjiru.Prelude.Input  as Hanjiru.Prelude
-import Hanjiru.Prelude.Knot   as Hanjiru.Prelude
 
 import Prelude
 import Control.Applicative

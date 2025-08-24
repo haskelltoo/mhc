@@ -10,13 +10,14 @@ library
     Hanjiru
     -- Hanjiru grammar combinator language.
     Hanjiru.Language
+  exposed-modules:
     Hanjiru.Prelude
     Hanjiru.Prelude.Free
     Hanjiru.Prelude.Input
-    Hanjiru.Prelude.Knot
   exposed-modules:
     -- Hanjiru parse-interpreters.
     Hanjiru.Interpret
+    Hanjiru.Interpret.Earley.Slow
     Hanjiru.Interpret.LR0.Fast
     Hanjiru.Interpret.LR0.Slow
   exposed-modules:

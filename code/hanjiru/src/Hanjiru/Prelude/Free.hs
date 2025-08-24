@@ -17,11 +17,16 @@ module Hanjiru.Prelude.Free
   , runFree
   , liftF
   , retract
+
+    -- * MonadFix
+  , Knot (..)
+  , runKnot
   )
   where
 
 import Control.Applicative
 import Control.Monad
+import Control.Monad.Fix
 import Data.Function
 import Data.Kind (Type)
 
@@ -127,3 +132,45 @@ liftF ma = Bind ma Return
 retract :: Monad f => Free f ~> f
 retract (Return a)  = pure a
 retract (Bind ma k) = ma >>= retract . k
+
+-- | 'Knot' is a free construction for 'MonadFix'.
+
+data Knot f a where
+
+  Tie :: a -> Knot f a
+
+  Knot :: (a -> Knot f a) -> (a -> Knot f b) -> Knot f b
+
+  Bend :: f a -> (a -> Knot f b) -> Knot f b
+
+instance Functor (Knot f) where
+
+  fmap f (Tie a)    = Tie (f a)
+  fmap f (Knot g h) = Knot g (fmap f . h)
+  fmap f (Bend p h) = Bend p (fmap f . h)
+
+instance Applicative (Knot f) where
+
+  pure = Tie
+
+  (<*>) = ap
+
+instance Monad (Knot f) where
+
+  Tie a     >>= k = k a
+  Knot g h  >>= k = Knot g (h >=> k)
+  Bend p h  >>= k = Bend p (h >=> k)
+
+instance MonadFix (Knot f) where
+
+  mfix f = Knot f Tie
+
+-- | Interpret a 'Knot' in a monad @m@ by way of a natural transformation.
+
+runKnot :: MonadFix m => f ~> m -> Knot f ~> m
+runKnot (eta :: f ~> m) = go
+  where
+    go :: Knot f ~> m
+    go (Tie a)    = pure a
+    go (Knot f k) = go . k =<< mfix (go <$> f)
+    go (Bend a k) = go . k =<< eta a

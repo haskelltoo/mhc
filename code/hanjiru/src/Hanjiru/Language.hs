@@ -43,11 +43,11 @@ instance Functor (Move t) where
 
 infixr 0 <?>
 
-(<?>) :: info -> [Kata t a] -> Knot (Kata t a)
+(<?>) :: info -> [Kata t a] -> Knot f (Kata t a)
 (<?>) = def
 
-def :: info -> [Kata t a] -> Knot (Kata t a)
-def info alts = Bend (Ap (Predict alts) $ pure id) Tie
+def :: info -> [Kata t a] -> Knot f (Kata t a)
+def info alts = Knot (const $ Tie $ Ap (Predict alts) $ pure id) Tie
 
 terminal :: info -> (t -> Maybe a) -> Kata t a
 terminal info t = Ap (Scan t) (pure id)
