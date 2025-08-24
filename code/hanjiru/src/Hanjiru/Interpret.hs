@@ -1,7 +1,7 @@
 module Hanjiru.Interpret where
 
-import Hanjiru.Language (Kata, Move (..))
 import Hanjiru.Prelude
+import Hanjiru.Language (Kata, Move (..))
 
 import Data.Kind
 
@@ -12,9 +12,9 @@ class ParseVia algo where
   -- | Parse an input via the designated algorithm.
 
   parse ::
-        algo info
+        algo f info
     ->  Input input t
-    =>  Knot (Kata t a)
+    =>  Knot f (Kata t a)
     ->  input
     ->  Result algo info a
 

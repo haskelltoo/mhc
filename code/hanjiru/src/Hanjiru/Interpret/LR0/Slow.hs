@@ -1,10 +1,12 @@
 module Hanjiru.Interpret.LR0.Slow where
 
+import Hanjiru.Prelude
 import Hanjiru.Interpret qualified
 import Hanjiru.Language
-import Hanjiru.Prelude
 
-data SlowLR0 info = SlowLR0
+import Data.Kind
+
+data SlowLR0 (f :: Type -> Type) info = SlowLR0
 
 instance Hanjiru.Interpret.ParseVia SlowLR0 where
 
