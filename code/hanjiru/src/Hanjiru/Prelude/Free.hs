@@ -91,18 +91,18 @@ data Free f (a :: Type) where
 
   Bind :: f a -> (a -> Free f b) -> Free f b
 
-instance Functor f => Functor (Free f) where
+instance Functor (Free f) where
 
   fmap f (Return a)   = Return (f a)
   fmap f (Bind ma k)  = Bind ma (fmap f . k)
 
-instance Functor f => Applicative (Free f) where
+instance Applicative (Free f) where
 
   pure = Return
 
   (<*>) = ap
 
-instance Functor f => Monad (Free f) where
+instance Monad (Free f) where
 
   Return a  >>= k = k a
   Bind ma h >>= k = Bind ma (h >=> k)
