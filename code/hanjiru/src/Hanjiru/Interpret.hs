@@ -21,6 +21,3 @@ class ParseVia algo where
   type Result algo info a :: Type
 
 type State t = Free (Move t)
-
-kataToState :: Kata t a -> State t a
-kataToState = runAp liftF
