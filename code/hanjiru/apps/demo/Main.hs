@@ -7,13 +7,13 @@ import Hanjiru
 import Hanjiru.Prelude
 
 import Data.Char
+import Data.Maybe
 
 main :: IO ()
 main =
   do
-    -- let out = parse SlowLR0 expr "A + B * C"
-    -- print out
-    pure ()
+    let out = parse (SlowEarley @()) expr $ words "A + B * C"
+    print $ take 5 out
 
 data Expr
   = Var String
@@ -21,7 +21,7 @@ data Expr
   | Mul Expr Expr
   deriving Show
 
-expr :: Input [String] String => Knot (Kata String Expr)
+expr :: Input [String] String => Knot Identity (Kata String Expr)
 expr = mdo
   goal <- def "goal" [sum]
 
@@ -31,16 +31,16 @@ expr = mdo
         pure $ Add a b
 
   sum <- def "sum"
-    [ Add <$> sum <* token "+" <*> product
-    , product
+    [ product
+    , Add <$> sum <* token "+" <*> product
     ]
 
   let mul a b = do
         pure $ Mul a b
 
   product <- def "product"
-    [ Mul <$> product <* token "*" <*> atom
-    , atom
+    [ atom
+    , Mul <$> product <* token "*" <*> atom
     ]
 
   atom <- def "atom"
@@ -50,7 +50,7 @@ expr = mdo
 
   pure goal
 
-var :: Knot (Kata String Expr)
+var :: Knot Identity (Kata String Expr)
 var = def "var"
     [ Var <$> ident
     ]
