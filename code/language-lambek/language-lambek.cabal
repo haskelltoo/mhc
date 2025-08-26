@@ -8,6 +8,8 @@ build-type: Simple
 library
   exposed-modules:
     Language.Lambek
+    Language.Lambek.Defn
+    Language.Lambek.Ident
     Language.Lambek.Parse
   hs-source-dirs: src
   build-depends:
