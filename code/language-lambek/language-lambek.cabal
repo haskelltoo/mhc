@@ -1,0 +1,33 @@
+cabal-version: 3.4
+
+name: language-lambek
+version: 0
+
+build-type: Simple
+
+library
+  exposed-modules:
+    Language.Lambek
+    Language.Lambek.Parse
+  hs-source-dirs: src
+  build-depends:
+    , base ^>= 4.20
+    , containers
+    , parsec
+    , text
+    , transformers
+  default-language: Haskell2010
+  default-extensions:
+    GADTs
+    ImportQualifiedPost
+    InstanceSigs
+    MultiParamTypeClasses
+    NamedFieldPuns
+    NoImplicitPrelude
+    NoStarIsType
+    RankNTypes
+    ScopedTypeVariables
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
