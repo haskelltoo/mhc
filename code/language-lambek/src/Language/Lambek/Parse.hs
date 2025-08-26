@@ -22,13 +22,13 @@ pPatterns = many pPattern
 pPattern :: Parsec String () Pat
 pPattern = pure PatVar <*> pIdent
 
-pConsDecls :: Parsec String () [ConsDecl]
+pConsDecls :: Parsec String () [ConDecl]
 pConsDecls =
       (:) <$> pConsDecl <*> pConsDecls
   <|> pure []
 
-pConsDecl :: Parsec String () ConsDecl
-pConsDecl = ConsDecl <$> pIdent <*> (pReservedOp "::" *> pExpr)
+pConsDecl :: Parsec String () ConDecl
+pConsDecl = ConDecl <$> pIdent <*> (pReservedOp "::" *> pExpr)
 
 pExpr :: Parsec String () Expr
 pExpr =

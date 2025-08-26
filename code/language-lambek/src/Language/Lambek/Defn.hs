@@ -3,13 +3,13 @@ module Language.Lambek.Defn where
 import Language.Lambek.Ident
 
 data Defn
-  = Data Ident [Pat] [ConsDecl]
+  = Data Ident [Pat] [ConDecl]
   | Fun
   | Class Ident [Pat] [Defn]
   | Instance Ident [Pat] [Defn]
 
-data ConsDecl
-  = ConsDecl Ident Type
+data ConDecl
+  = ConDecl Ident Type
 
 data Expr
   = App Expr Expr
