@@ -10,7 +10,14 @@ library
     Language.Lambek
     Language.Lambek.Defn
     Language.Lambek.Ident
+    Language.Lambek.Lex
+    Language.Lambek.Literal
     Language.Lambek.Parse
+  other-modules:
+    Internal.Prelude
+    Internal.List
+    Text.PrettyPrint.HughesPJLite
+    Text.ParserComb
   hs-source-dirs: src
   build-depends:
     , base ^>= 4.20
