@@ -9,6 +9,7 @@ library
   exposed-modules:
     Frontend.Lambek
     Frontend.Lambek.Token
+    Frontend.Lambek.Tokenize
     Language.Lambek
     Language.Lambek.Defn
     Language.Lambek.Ident

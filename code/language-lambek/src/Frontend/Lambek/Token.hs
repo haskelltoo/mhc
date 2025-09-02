@@ -1,4 +1,6 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Frontend.Lambek.Token
   (
@@ -13,10 +15,10 @@ module Frontend.Lambek.Token
   )
   where
 
-import Frontend.Lambek.Prelude
-import Language.Lambek.Name
-
+import Prelude
 import Prettyprinter
+
+import Language.Lambek.Name
 
 data Token (l :: Layoutness) where
 
@@ -50,11 +52,23 @@ data Token (l :: Layoutness) where
   -- | @=@
   Equals :: Token l
 
+  -- | An indent.
+  Indent :: !Int -> Token 'Layout
+
   -- | @123@
   Integer :: !Integer -> Token l
 
   -- | A keyword.
   Keyword :: !Keyword -> Token 'NonLayout
+
+  -- | Lambda, @\\@.
+  Lambda :: Token l
+
+  -- | Mark a new line in the current layout section.
+  Newline :: Token 'NonLayout
+
+  -- | An operator.
+  Operator :: Unqualified -> Token l
 
   -- | @(@
   ParenL :: Token l
@@ -89,8 +103,12 @@ instance Eq (Token l) where
   Comma           == Comma            = True
   End             == End              = True
   Equals          == Equals           = True
+  Indent a        == Indent b         = a == b
   Integer a       == Integer b        = a == b
   Keyword a       == Keyword b        = a == b
+  Lambda          == Lambda           = True
+  Newline         == Newline          = True
+  Operator a      == Operator b       = a == b
   ParenL          == ParenL           = True
   ParenR          == ParenR           = True
   SpecialWord a   == SpecialWord b    = a == b
@@ -99,21 +117,25 @@ instance Eq (Token l) where
 
 instance Pretty (Token l) where
   pretty token = case token of
-    ArrowL -> pretty "<-"
-    ArrowR -> pretty "->"
-    Begin -> pretty ":{"
-    BracketL -> pretty "["
-    BracketR -> pretty "]"
+    ArrowL -> "<-"
+    ArrowR -> "->"
+    Begin -> ">{"
+    BracketL -> "["
+    BracketR -> "]"
     Character c -> pretty c
-    Colon -> pretty ":"
-    Comma -> pretty ","
-    End -> pretty ":}"
-    Equals -> pretty "="
+    Colon -> ":"
+    Comma -> ","
+    End -> "}<"
+    Equals -> "="
+    Indent n -> "<" <> pretty n <> ">"
     Integer x -> pretty x
     Keyword kw -> pretty kw
+    Lambda -> "\\"
+    Newline -> "\\n"
+    Operator op -> pretty op
     SpecialWord kw -> pretty kw
-    ParenL -> pretty "("
-    ParenR -> pretty ")"
+    ParenL -> "("
+    ParenR -> ")"
     Word word -> pretty word
 
 data Keyword
@@ -131,13 +153,13 @@ data Keyword
 
 instance Pretty Keyword where
   pretty kw = case kw of
-    Case -> pretty "case"
-    Class -> pretty "class"
-    Data -> pretty "data"
-    Do -> pretty "do"
-    In -> pretty "in"
-    Instance -> pretty "instance"
-    Let -> pretty "let"
-    Of -> pretty "of"
-    Record -> pretty "record"
-    Where -> pretty "where"
+    Case -> "case"
+    Class -> "class"
+    Data -> "data"
+    Do -> "do"
+    In -> "in"
+    Instance -> "instance"
+    Let -> "let"
+    Of -> "of"
+    Record -> "record"
+    Where -> "where"
