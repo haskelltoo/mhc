@@ -6,6 +6,7 @@
 
         packages = {
             hanjiru.source = ./code/hanjiru;
+            lambek.source = ./code/lambek;
             mhc.source = ./code/mhc;
             mhc-haskell.source = ./code/mhc-haskell;
         };

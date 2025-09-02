@@ -1,0 +1,48 @@
+cabal-version: 3.4
+
+name: language-lambek
+version: 0
+
+build-type: Simple
+
+library
+  exposed-modules:
+    Frontend.Lambek
+    Frontend.Lambek.Token
+    Frontend.Lambek.Tokenize
+    Language.Lambek
+    Language.Lambek.Defn
+    Language.Lambek.Ident
+    Language.Lambek.Lex
+    Language.Lambek.Literal
+    Language.Lambek.Name
+    Language.Lambek.Parse
+  other-modules:
+    Frontend.Lambek.Prelude    
+    Internal.Prelude
+    Internal.List
+    Text.PrettyPrint.HughesPJLite
+    Text.ParserComb
+  hs-source-dirs: src
+  build-depends:
+    , base ^>= 4.20
+    , containers
+    , parsec
+    , prettyprinter
+    , text
+    , transformers
+  default-language: Haskell2010
+  default-extensions:
+    GADTs
+    ImportQualifiedPost
+    InstanceSigs
+    MultiParamTypeClasses
+    NamedFieldPuns
+    NoImplicitPrelude
+    NoStarIsType
+    RankNTypes
+    ScopedTypeVariables
+    TupleSections
+    TypeApplications
+    TypeFamilies
+    TypeOperators
