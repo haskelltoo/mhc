@@ -5,10 +5,10 @@
         hackage = pkgs.haskell.packages.ghc9101;
 
         packages = {
-            hanjiru.source = ./code/hanjiru;
-            lambek.source = ./code/lambek;
-            mhc.source = ./code/mhc;
-            mhc-haskell.source = ./code/mhc-haskell;
+            hanjiru.source = ./nix/hanjiru;
+            lambek.source = ./nix/language-lambek;
+            mhc.source = ./nix/mhc;
+            mhc-haskell.source = ./nix/mhc-haskell;
         };
     };
 }

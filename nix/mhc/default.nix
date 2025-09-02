@@ -1,9 +1,9 @@
 { lib, mkDerivation, base } :
 
 mkDerivation {
-    pname = "mhc-haskell";
+    pname = "mhc";
     version = "0";
-    src = ./.;
+    src = ../../code/mhc;
     libraryHaskellDepends = [ base ];
     license = lib.licenses.bsd3;
 }

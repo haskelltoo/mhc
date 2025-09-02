@@ -1,9 +1,9 @@
 { lib, mkDerivation, base } :
 
 mkDerivation {
-    pname = "mhc";
+    pname = "language-lambek";
     version = "0";
-    src = ./.;
+    src = ../../code/language-lambek;
     libraryHaskellDepends = [ base ];
     license = lib.licenses.bsd3;
 }
