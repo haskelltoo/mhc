@@ -120,23 +120,26 @@ instance Pretty (Token l) where
     ArrowL -> "<-"
     ArrowR -> "->"
     Begin -> ">{"
-    BracketL -> "["
-    BracketR -> "]"
+    BracketL -> lbracket
+    BracketR -> rbracket
     Character c -> pretty c
-    Colon -> ":"
-    Comma -> ","
+    Colon -> colon
+    Comma -> comma
     End -> "}<"
-    Equals -> "="
-    Indent n -> "<" <> pretty n <> ">"
+    Equals -> equals
+    Indent n -> enclose langle rangle (pretty n)
     Integer x -> pretty x
     Keyword kw -> pretty kw
-    Lambda -> "\\"
-    Newline -> "\\n"
+    Lambda -> backslash
+    Newline -> backslash <> "n"
     Operator op -> pretty op
     SpecialWord kw -> pretty kw
-    ParenL -> "("
-    ParenR -> ")"
+    ParenL -> lparen
+    ParenR -> rparen
     Word word -> pretty word
+
+instance Show (Token l) where
+  showsPrec n = showsPrec n . pretty
 
 data Keyword
   = Case
