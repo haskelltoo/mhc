@@ -2,7 +2,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Frontend.Lambek.Token
+module HaskellLike.Token
   (
     -- * Tokens
     Token (..)
@@ -18,7 +18,7 @@ module Frontend.Lambek.Token
 import Prelude
 import Prettyprinter
 
-import Language.Lambek.Name
+import HaskellLike.Name
 
 data Token (l :: Layoutness) where
 

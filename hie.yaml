@@ -4,6 +4,8 @@ cradle:
       component: "lib:hanjiru"
     - path: "code/hanjiru/apps/demo"
       component: "exe:demo"
+    - path: "code/haskell-like/src"
+      component: "lib:haskell-like"
     - path: "code/language-lambek/src"
       component: "lib:language-lambek"
     - path: "code/mhc/src"

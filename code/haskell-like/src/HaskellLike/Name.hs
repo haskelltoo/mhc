@@ -1,4 +1,4 @@
-module Language.Lambek.Name where
+module HaskellLike.Name where
 
 import Prelude (Show)
 import Data.Char (isLetter)

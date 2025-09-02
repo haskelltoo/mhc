@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Frontend.Lambek.Tokenize where
+module HaskellLike.Frontend.Tokenize where
 
 import Prelude
 import Control.Applicative
@@ -15,8 +15,8 @@ import Text.Parsec (Parsec)
 import Text.Parsec qualified as Parsec
 import Text.Parsec.Pos qualified as Parsec
 
-import Frontend.Lambek.Token
-import Language.Lambek.Name
+import HaskellLike.Name
+import HaskellLike.Token
 
 type Tokenize = Parsec Text ()
 
