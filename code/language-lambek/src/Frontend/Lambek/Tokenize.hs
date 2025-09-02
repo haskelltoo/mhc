@@ -26,11 +26,13 @@ tokenize
   -> Text
   -> Either Parsec.ParseError [Token 'Layout]
 
-tokenize line path text = Parsec.parse p path text
-  where
-    p = do
-      Parsec.setPosition (Parsec.newPos path line 1)
-      many token <* Parsec.eof
+tokenize line path text = Parsec.parse (top line) path text
+
+top :: Int -> Tokenize [Token 'Layout]
+top line = do
+  pos <- Parsec.getPosition
+  Parsec.setPosition (Parsec.setSourceLine pos line)
+  many token <* Parsec.eof
 
 token :: Tokenize (Token 'Layout)
 token = Parsec.choice
