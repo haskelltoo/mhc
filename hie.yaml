@@ -6,8 +6,6 @@ cradle:
       component: "exe:demo"
     - path: "code/haskell-like/src"
       component: "lib:haskell-like"
-    - path: "code/language-lambek/src"
-      component: "lib:language-lambek"
     - path: "code/mhc/src"
       component: "lib:mhc"
     - path: "code/mhc-haskell/src"
