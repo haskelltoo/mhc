@@ -2,11 +2,15 @@ cradle:
   cabal:
     - path: "code/hanjiru/src"
       component: "lib:hanjiru"
+
     - path: "code/hanjiru/apps/demo"
       component: "exe:demo"
+
     - path: "code/haskell-like/src"
       component: "lib:haskell-like"
+      
     - path: "code/mhc/src"
       component: "lib:mhc"
+      
     - path: "code/mhc-haskell/src"
       component: "lib:mhc-haskell"
