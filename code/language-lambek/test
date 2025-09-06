@@ -1,7 +1,0 @@
-Nat data
-  Zero :: Nat
-  Succ :: Nat -> Nat
-
-Example index data
-  A :: Example Zero
-  B :: \x -> Example (Succ x)
