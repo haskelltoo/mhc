@@ -1,0 +1,31 @@
+cabal-version: 3.4
+
+name: haskell-like
+version: 0
+
+build-type: Simple
+
+library
+  exposed-modules:
+    HaskellLike.Frontend
+    HaskellLike.Frontend.Tokenize
+    HaskellLike.Name
+    HaskellLike.Token
+  hs-source-dirs: src
+  build-depends:
+    , base ^>= 4.20
+    , containers
+    , parsec
+    , prettyprinter
+    , text
+    , transformers
+  default-language: Haskell2010
+  default-extensions:
+    ImportQualifiedPost
+    KindSignatures
+    NoImplicitPrelude
+    NoStarIsType
+    RankNTypes
+    ScopedTypeVariables
+    TupleSections
+    TypeApplications
