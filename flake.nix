@@ -1,18 +1,24 @@
 {
-    description = "Montreal Haskell Compiler";
+  description = "Montreal Haskell Compiler";
 
-    inputs = {
-        flake-parts.url = "github:hercules-ci/flake-parts";
-        haskell.url = "github:exclusive-and/haskell-nix";
-        nixpkgs.url = "nixpkgs/nixos-25.05";
+  inputs.nixpkgs.url = "nixpkgs/nixos-25.05";
+
+  outputs = {self, nixpkgs}:
+    let
+      systems = [
+        "x86_64-linux"
+      ];
+
+      forAllSystems = nixpkgs.lib.genAttrs systems;
+
+      main = forAllSystems (system:
+        import ./. {
+          inherit nixpkgs system;
+        }
+      );
+    in
+    {
+      packages = forAllSystems (system: main.${system}.packages);
+      devShells = forAllSystems (system: main.${system}.devShells);
     };
-
-    outputs = { flake-parts, haskell, ... } @ inputs:
-        flake-parts.lib.mkFlake { inherit inputs; } {
-            imports = [ haskell.flakeModule ];
-
-            perSystem = import ./.;
-            
-            systems = [ "x86_64-linux" ];
-        };
 }
