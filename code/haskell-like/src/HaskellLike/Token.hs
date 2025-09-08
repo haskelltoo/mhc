@@ -3,17 +3,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module HaskellLike.Token
-  (
-    -- * Tokens
+  ( -- * Tokens
     Token (..)
+  , Keyword (..)
 
     -- * Layout
   , Layoutness (..)
-
-    -- * Keywords
-  , Keyword (..)
-  )
-  where
+  ) where
 
 import Prelude
 import Prettyprinter
@@ -84,13 +80,6 @@ data Token (l :: Layoutness) where
 
   -- | A user-defined word.
   Word :: Unqualified -> Token l
-
--- | Whether a token is layout-sensitive.
-
-data Layoutness
-  = Layout
-  | NonLayout
-  deriving (Eq, Show)
 
 instance Eq (Token l) where
   ArrowL          == ArrowL           = True
@@ -166,3 +155,11 @@ instance Pretty Keyword where
     Of -> "of"
     Record -> "record"
     Where -> "where"
+
+-- | Whether a token is layout-sensitive.
+
+data Layoutness
+  = Layout
+  | NonLayout
+  deriving (Eq, Show)
+  
