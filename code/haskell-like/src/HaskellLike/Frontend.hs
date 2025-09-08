@@ -1,7 +1,14 @@
 module HaskellLike.Frontend
-  (
+  ( -- * Tokens
     tokenize
-  )
-  where
+  , Token (..)
+  , Keyword (..)
+  , Unqualified (..)
+
+    -- * Layout
+  , Layoutness (..)
+  ) where
 
 import HaskellLike.Frontend.Tokenize (tokenize)
+import HaskellLike.Name
+import HaskellLike.Token
