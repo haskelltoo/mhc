@@ -1,25 +1,23 @@
 {
-  haskell,
-
-  name,
-  version,
-  src,
-
-  inputs ? pkgs: with pkgs; [
-    base
-  ],
-
-  license ? "",
-
-  ...
+  inputs ? []
+, ghcVersion ? "ghc9101"
+, pkgs
+, cabal-install ? pkgs.cabal-install
+, ghc ? pkgs.ghc
+, haskell ? pkgs.haskell.packages.${ghcVersion}
 }:
 
-haskell.mkDerivation {
-  pname = name;
-  inherit version;
-  inherit src;
+let
+  build = import ./build-haskell-internal.nix {
+    inherit pkgs;
+    inherit cabal-install;
+    inherit ghc;
+    inherit haskell;
+  };
 
-  libraryHaskellDepends = inputs haskell;
-
-  inherit license;
-}
+  buildNamed = args: {
+    name = args.name;
+    value = build args;
+  };
+in
+builtins.listToAttrs (builtins.map buildNamed inputs)
