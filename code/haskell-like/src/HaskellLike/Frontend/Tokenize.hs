@@ -18,7 +18,7 @@ import Text.Parsec.Pos qualified as Parsec
 import HaskellLike.Name
 import HaskellLike.Token
 
-type Tokenize = Parsec Text ()
+-- | Convert a raw text input into a stream of tokens.
 
 tokenize
   :: Int
@@ -27,6 +27,8 @@ tokenize
   -> Either Parsec.ParseError [Token 'Layout]
 
 tokenize line path text = Parsec.parse (top line) path text
+
+type Tokenize = Parsec Text ()
 
 top :: Int -> Tokenize [Token 'Layout]
 top line = do
