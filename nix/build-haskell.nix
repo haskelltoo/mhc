@@ -25,6 +25,7 @@ let
     mapAttrs
     zipAttrsWith;
 
+  # The internal build function. Creates a derivation that builds a Haskell input.
   build = import ./build-haskell-internal.nix {
     inherit pkgs;
     inherit cabal-install;
@@ -32,6 +33,7 @@ let
     inherit haskell;
   };
 
+  # Build a single named Haskell component.
   buildOutput =
     input:
     {
@@ -40,48 +42,48 @@ let
       value = build input;
     };
   
+  # Build all the requested Haskell components, and output them as an attribute set.
   outputs = lib.fix (
     self:
     listToAttrs (map buildOutput (inputs self))
   );
+
+  builtDrvs = attrValues outputs;
+
+  internalDepends =
+    map (x: x.getCabalDeps) builtDrvs;
+
+  isNotBuilt =
+    x:
+    lib.all (drv: x.outPath or null != drv.outPath) builtDrvs;
+
+  combine = concatMap (filter isNotBuilt);
+
+  externalDepends =
+    zipAttrsWith (_: combine) internalDepends;
 in
 {
   inherit outputs;
 
-  develop =
+  shell =
     let
-      selected = attrValues outputs;
-
-      isNotSelected = x: lib.all (y: x.outPath or null != y.outPath) selected;
-      combine = concatMap (filter isNotSelected);
-
-      depsForSelected = map (x: x.getCabalDeps) selected;
-      depsCombined = zipAttrsWith (_: combine) depsForSelected;
+      placeholderArgs = {
+        pname = "shell";
+        version = "0";
+        license = null;
+      };
 
       # Create a placeholder Haskell derivation.
-      placeholder = haskell.mkDerivation (
-        {
-          pname = "shell";
-          version = "0";
-          license = null;
-        } // depsCombined
-      );
+      placeholder =
+        haskell.mkDerivation (placeholderArgs // externalDepends);
 
       drv = placeholder.envFunc {};
     in
-    args:
     drv.overrideAttrs (
       old:
-      args
-      // {
+      {
         nativeBuildInputs =
-          old.nativeBuildInputs ++
-          extraTools haskell ++
-          args.nativeBuildInputs or [];
-
-        buildInputs =
-          old.buildInputs ++
-          args.builtInputs or [];
+          old.nativeBuildInputs ++ extraTools haskell;
       }
     );
 }

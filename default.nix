@@ -87,17 +87,16 @@ let
 
     inherit ghcVersion;
     inherit pkgs;
-    inherit haskell;
-  };
 
-  haskell = pkgs.haskell.packages.${ghcVersion};
+    haskell = pkgs.haskell.packages.${ghcVersion};
+  };
 
   inherit (pkgs.lib) licenses;
 in
 {
   inherit (built)
     outputs
-    develop;
+    shell;
     
   packages = {
     inherit (built.outputs)
@@ -108,5 +107,5 @@ in
     default = built.outputs.mhc;
   };
 
-  devShells.default = built.develop {};
+  devShells.default = built.shell;
 }
