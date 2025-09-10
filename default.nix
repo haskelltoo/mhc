@@ -19,8 +19,8 @@ let
 
   buildHaskell = import ./nix/build-haskell.nix;
 
-  outputs = buildHaskell {
-    inputs = [
+  built = buildHaskell {
+    inputs = self: [
       {
         name = "hanjiru";
         version = "0";
@@ -58,8 +58,8 @@ let
 
         buildInputs = hackage: with hackage; [
           base
-          outputs.hanjiru
-          outputs.mhc-haskell
+          self.hanjiru
+          self.mhc-haskell
           text
         ];
 
@@ -72,12 +72,17 @@ let
 
         buildInputs = hackage: with hackage; [
           base
-          outputs.hanjiru
+          self.hanjiru
           text
         ];
 
         license = licenses.bsd3;
       }
+    ];
+
+    extraTools = hackage: with hackage; [
+      cabal-install
+      haskell-language-server
     ];
 
     inherit ghcVersion;
@@ -88,33 +93,20 @@ let
   haskell = pkgs.haskell.packages.${ghcVersion};
 
   inherit (pkgs.lib) licenses;
-
-  develop = haskell.shellFor {
-    packages = _: [
-      outputs.hanjiru
-      outputs.haskell-like
-      outputs.mhc
-      outputs.mhc-haskell
-    ];
-
-    nativeBuildInputs = with haskell; [
-      cabal-install
-      haskell-language-server
-    ];
-  };
 in
 {
-  inherit outputs;
-  inherit develop;
-
+  inherit (built)
+    outputs
+    develop;
+    
   packages = {
-    inherit (outputs)
+    inherit (built.outputs)
       hanjiru
       haskell-like
       mhc
       mhc-haskell;
-    default = outputs.mhc;
+    default = built.outputs.mhc;
   };
 
-  devShells.default = develop;
+  devShells.default = built.develop {};
 }

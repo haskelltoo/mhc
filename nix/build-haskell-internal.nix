@@ -15,12 +15,15 @@
 , license ? ""
 }:
 
+let
+  deps = buildInputs haskell;
+in
 haskell.mkDerivation {
   pname = name;
   inherit version;
   inherit src;
 
-  libraryHaskellDepends = buildInputs haskell;
+  libraryHaskellDepends = deps;
 
   inherit license;
 }
