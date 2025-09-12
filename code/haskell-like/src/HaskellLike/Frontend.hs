@@ -12,10 +12,12 @@ module HaskellLike.Frontend
   , Unqualified (..)
 
     -- * Layout
+  , layoutize
   , Layoutness (..)
   ) where
 
 import HaskellLike.Inform
+import HaskellLike.Layoutize (layoutize)
 import HaskellLike.Located
 import HaskellLike.Name
 import HaskellLike.Report

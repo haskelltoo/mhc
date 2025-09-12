@@ -9,6 +9,7 @@ library
   exposed-modules:
     HaskellLike.Frontend
     HaskellLike.Inform
+    HaskellLike.Layoutize
     HaskellLike.Located
     HaskellLike.Name
     HaskellLike.Report
