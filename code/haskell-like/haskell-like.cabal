@@ -8,7 +8,10 @@ build-type: Simple
 library
   exposed-modules:
     HaskellLike.Frontend
+    HaskellLike.Inform
+    HaskellLike.Located
     HaskellLike.Name
+    HaskellLike.Report
     HaskellLike.Token
     HaskellLike.Tokenize
   hs-source-dirs: src

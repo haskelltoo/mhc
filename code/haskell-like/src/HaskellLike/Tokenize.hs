@@ -15,40 +15,69 @@ import Text.Parsec (Parsec)
 import Text.Parsec qualified as Parsec
 import Text.Parsec.Pos qualified as Parsec
 
+import HaskellLike.Inform
+import HaskellLike.Located (Located (..))
+import HaskellLike.Located qualified as Located
 import HaskellLike.Name
+import HaskellLike.Report qualified as Report
 import HaskellLike.Token
 
 -- | Convert a raw text input into a stream of tokens.
 
-tokenize
-  :: Int
-  -> FilePath
-  -> Text
-  -> Either Parsec.ParseError [Token 'Layout]
+tokenize ::
+  MonadInform m =>
+  Int ->
+  FilePath ->
+  Text ->
+  m [Located (Token 'Layout)]
 
-tokenize line path text = Parsec.parse (top line) path text
+tokenize line path text =
+  case Parsec.parse (top line) path text
+  of
+    Left errs -> do
+      report $ Report.parseError errs
+      halt
+    Right result -> pure result
 
 type Tokenize = Parsec Text ()
 
-top :: Int -> Tokenize [Token 'Layout]
+-- | Tokenize the whole input, up to EOF.
+
+top :: Int -> Tokenize [Located (Token 'Layout)]
 top line = do
   pos <- Parsec.getPosition
   Parsec.setPosition (Parsec.setSourceLine pos line)
   many token <* Parsec.eof
 
-token :: Tokenize (Token 'Layout)
+token :: Tokenize (Located (Token 'Layout))
 token = Parsec.choice
   [
     newline
   , Parsec.space *> token
-  , visible
+  , locateToken visible
   ]
 
-newline :: Tokenize (Token 'Layout)
+-- | Newlines and indentation.
+
+newline :: Tokenize (Located (Token 'Layout))
 newline = do
   void Parsec.endOfLine
   void Parsec.spaces
-  Indent <$> Parsec.sourceColumn <$> Parsec.getPosition
+  locateToken (Indent <$> Parsec.sourceColumn <$> Parsec.getPosition)
+
+-- | Add location information to a tokenizer.
+
+locateToken ::
+  Tokenize (Token 'Layout) ->
+  Tokenize (Located (Token 'Layout))
+
+locateToken p = do
+  begin <- Parsec.getPosition
+  result <- p
+  end <- Parsec.getPosition
+  pure $ At (Located.range begin end) result
+
+-- | Visible tokens.
 
 visible :: Tokenize (Token 'Layout)
 visible = Parsec.choice

@@ -1,6 +1,12 @@
 module HaskellLike.Frontend
-  ( -- * Tokens
-    tokenize
+  ( -- * Reporting
+    MonadInform (..)
+  , Report (..)
+  , Span
+  , Located (..)
+
+    -- * Tokens
+  , tokenize
   , Token (..)
   , Keyword (..)
   , Unqualified (..)
@@ -9,6 +15,9 @@ module HaskellLike.Frontend
   , Layoutness (..)
   ) where
 
+import HaskellLike.Inform
+import HaskellLike.Located
 import HaskellLike.Name
+import HaskellLike.Report
 import HaskellLike.Token
 import HaskellLike.Tokenize (tokenize)
