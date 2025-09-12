@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module HaskellLike.Frontend.Tokenize where
+module HaskellLike.Tokenize where
 
 import Prelude
 import Control.Applicative

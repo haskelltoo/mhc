@@ -8,9 +8,9 @@ build-type: Simple
 library
   exposed-modules:
     HaskellLike.Frontend
-    HaskellLike.Frontend.Tokenize
     HaskellLike.Name
     HaskellLike.Token
+    HaskellLike.Tokenize
   hs-source-dirs: src
   build-depends:
     , base ^>= 4.20

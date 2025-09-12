@@ -9,6 +9,6 @@ module HaskellLike.Frontend
   , Layoutness (..)
   ) where
 
-import HaskellLike.Frontend.Tokenize (tokenize)
 import HaskellLike.Name
 import HaskellLike.Token
+import HaskellLike.Tokenize (tokenize)
