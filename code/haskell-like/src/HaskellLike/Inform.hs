@@ -24,4 +24,4 @@ class Monad m => MonadInform m where
 
   -- | Add context to reports.
 
-  within :: Span -> Pretty.Doc () -> m a -> m a
+  caption :: Span -> Pretty.Doc () -> m a -> m a
