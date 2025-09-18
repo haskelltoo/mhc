@@ -32,7 +32,7 @@ tokenize ::
   m [Located (Token 'Layout)]
 
 tokenize line path text =
-  case Parsec.parse (top line) path text
+  case Parsec.parse (tokenize' line) path text
   of
     Left errs -> do
       report $ Report.parseError errs
@@ -43,18 +43,30 @@ type Tokenize = Parsec Text ()
 
 -- | Tokenize the whole input, up to EOF.
 
-top :: Int -> Tokenize [Located (Token 'Layout)]
-top line = do
+tokenize' :: Int -> Tokenize [Located (Token 'Layout)]
+tokenize' line = do
   pos <- Parsec.getPosition
   Parsec.setPosition (Parsec.setSourceLine pos line)
-  many token <* Parsec.eof
+  go [] <* Parsec.eof
+  where
+    go xs = tokenThen $ \t -> do
+      input <- Parsec.getInput
+      if Text.null input then
+        pure xs
+      else
+        go (xs ++ [t])
+
+tokenThen :: (Located (Token 'Layout) -> Tokenize a) -> Tokenize a
+tokenThen cont = do
+  At loc token <- token
+  cont (At loc token)
 
 token :: Tokenize (Located (Token 'Layout))
 token = Parsec.choice
   [
-    newline
+    locateToken visible
+  , newline
   , Parsec.space *> token
-  , locateToken visible
   ]
 
 -- | Newlines and indentation.
