@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 
 module HaskellLike.Located where
@@ -11,8 +12,23 @@ import Text.Parsec.Pos
 
 data Located a = At Span a
 
+instance Functor Located where
+  fmap f (At origin a) = At origin (f a) 
+
 instance Show a => Show (Located a) where
   show (At _ a) = show a
+
+unLoc :: Located a -> a
+unLoc (At origin a) = a
+
+at :: a -> Located b -> Located a
+at a (At loc _) = At loc a
+
+atBeginningOf :: a -> Located b -> Located a
+atBeginningOf a (At loc _) = At (beginningOf loc) a
+
+atEndOf :: a -> Located b -> Located a
+atEndOf a (At loc _) = At (endOf loc) a
 
 data Span = Span
   {
@@ -62,5 +78,23 @@ point name line column = Span
   , endColumn = column
   }
 
+beginningOf :: Span -> Span
+beginningOf span = span
+  {
+    endLine = span.beginLine
+  , endColumn = span.beginColumn
+  }
+
+endOf :: Span -> Span
+endOf span = span
+  {
+    beginLine = span.endLine
+  , beginColumn = span.endColumn
+  }
+
 pos :: SourcePos -> Span
 pos = point <$> sourceName <*> sourceLine <*> sourceColumn
+
+parsecBeginning :: Span -> SourcePos
+parsecBeginning Span{name, beginLine, beginColumn} =
+  newPos (Text.unpack name) beginLine beginColumn
