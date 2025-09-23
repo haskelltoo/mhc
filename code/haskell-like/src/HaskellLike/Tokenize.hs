@@ -1,7 +1,31 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module HaskellLike.Tokenize where
+module HaskellLike.Tokenize
+  (
+  -- * Main interface
+  token,
+  tokens,
+  tokenize,
+  Tokenize,
+
+  -- * Internal tokenizers
+  alphanumeric,
+  character,
+  colon,
+  digit,
+  doubleQuote,
+  equals,
+  letter,
+  newline,
+  operator,
+  singleQuote,
+  special,
+  symbol,
+  underscore,
+  visible,
+  word,
+  ) where
 
 import Prelude
 import Control.Applicative
@@ -22,6 +46,32 @@ import HaskellLike.Name
 import HaskellLike.Report qualified as Report
 import HaskellLike.Token
 
+-- | Run a continuation on the next token in the input.
+
+token :: (Located (Token 'Layout) -> Tokenize a) -> Tokenize a
+token cont = go >>= cont
+  where
+    go = Parsec.choice
+      [
+        locateToken visible
+      , newline
+      , Parsec.space *> go
+      ]
+
+-- | Convert the whole input into tokens all at once.
+
+tokens :: Tokenize [Located (Token 'Layout)]
+tokens = go []
+  where
+    go xs = token $ \t -> do
+      input <- Parsec.getInput
+      if Text.null input then
+        pure xs
+      else
+        go (xs ++ [t])
+
+type Tokenize = Parsec Text ()
+
 -- | Convert a raw text input into a stream of tokens.
 
 tokenize ::
@@ -32,42 +82,16 @@ tokenize ::
   m [Located (Token 'Layout)]
 
 tokenize line path text =
-  case Parsec.parse (tokenize' line) path text
-  of
+  case Parsec.parse go path text of
     Left errs -> do
       report $ Report.parseError errs
       halt
     Right result -> pure result
-
-type Tokenize = Parsec Text ()
-
--- | Tokenize the whole input, up to EOF.
-
-tokenize' :: Int -> Tokenize [Located (Token 'Layout)]
-tokenize' line = do
-  pos <- Parsec.getPosition
-  Parsec.setPosition (Parsec.setSourceLine pos line)
-  go [] <* Parsec.eof
   where
-    go xs = tokenThen $ \t -> do
-      input <- Parsec.getInput
-      if Text.null input then
-        pure xs
-      else
-        go (xs ++ [t])
-
-tokenThen :: (Located (Token 'Layout) -> Tokenize a) -> Tokenize a
-tokenThen cont = do
-  At loc token <- token
-  cont (At loc token)
-
-token :: Tokenize (Located (Token 'Layout))
-token = Parsec.choice
-  [
-    locateToken visible
-  , newline
-  , Parsec.space *> token
-  ]
+    go = do
+      pos <- Parsec.getPosition
+      Parsec.setPosition (Parsec.setSourceLine pos line)
+      tokens <* Parsec.eof
 
 -- | Newlines and indentation.
 

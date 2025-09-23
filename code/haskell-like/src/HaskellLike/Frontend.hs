@@ -1,6 +1,7 @@
 module HaskellLike.Frontend
   (
   -- * Token and layout analysis
+  token,
   tokenize,
   layoutize,
   Token,
@@ -22,4 +23,4 @@ import HaskellLike.Located (Located (..), Span)
 import HaskellLike.Name
 import HaskellLike.Report (Report (..))
 import HaskellLike.Token
-import HaskellLike.Tokenize (tokenize)
+import HaskellLike.Tokenize (token, tokenize)
