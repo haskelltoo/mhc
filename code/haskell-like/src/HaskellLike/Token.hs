@@ -3,13 +3,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module HaskellLike.Token
-  ( -- * Tokens
-    Token (..)
-  , Keyword (..)
+  (
+  -- * Tokens
+  Token (..),
+  Keyword (..),
 
-    -- * Layout
-  , fromLayout
-  , Layoutness (..)
+  -- * Layout
+  fromLayout,
+  Layoutness (..),
   ) where
 
 import Prelude
