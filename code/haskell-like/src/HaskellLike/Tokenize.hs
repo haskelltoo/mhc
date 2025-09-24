@@ -75,14 +75,15 @@ instance MonadToken (Token 'Layout) Tokenize where
     , space *> tokenLex
     ]
 
-  tokensLex = go []
+  tokensLex = reverse <$> go []
     where
-      go xs = tokenRun $ \t -> do
+      go xs = do
         input <- getInput
         if Text.null input then
           pure xs
-        else
-          go (xs ++ [t])
+        else do
+          token <- tokenRun pure
+          go (token : xs)
 
 -- | Convert a raw text input into a stream of tokens.
 
