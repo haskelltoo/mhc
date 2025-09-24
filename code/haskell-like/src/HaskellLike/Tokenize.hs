@@ -4,8 +4,7 @@
 module HaskellLike.Tokenize
   (
   -- * Main interface
-  token,
-  tokens,
+  MonadToken (..),
   tokenize,
   Tokenize,
 
@@ -13,10 +12,8 @@ module HaskellLike.Tokenize
   alphanumeric,
   character,
   colon,
-  digit,
   doubleQuote,
   equals,
-  letter,
   newline,
   operator,
   singleQuote,
@@ -32,45 +29,61 @@ import Control.Applicative
 import Control.Monad
 import Data.Char
 import Data.Functor
-import Data.Functor.Identity
 import Data.Text (Text)
 import Data.Text qualified as Text
-import Text.Parsec (Parsec)
-import Text.Parsec qualified as Parsec
-import Text.Parsec.Pos qualified as Parsec
 
 import HaskellLike.Inform
 import HaskellLike.Located (Located (..))
 import HaskellLike.Located qualified as Located
 import HaskellLike.Name
+import HaskellLike.Parsec
 import HaskellLike.Report qualified as Report
 import HaskellLike.Token
 
--- | Run a continuation on the next token in the input.
+-- | Monad capable of lexical analysis on a hidden input string.
 
-token :: (Located (Token 'Layout) -> Tokenize a) -> Tokenize a
-token cont = go >>= cont
-  where
-    go = Parsec.choice
-      [
-        locateToken visible
-      , newline
-      , Parsec.space *> go
-      ]
+class Monad m => MonadToken token m where
+  
+  -- | Run a continuation on the next token in the input.
 
--- | Convert the whole input into tokens all at once.
+  tokenRun :: (Located token -> m a) -> m a
+  tokenRun cont =
+    tokenLex >>= cont
 
-tokens :: Tokenize [Located (Token 'Layout)]
-tokens = go []
-  where
-    go xs = token $ \t -> do
-      input <- Parsec.getInput
-      if Text.null input then
-        pure xs
-      else
-        go (xs ++ [t])
+  {-# INLINE tokenRun #-}
+
+  -- | Get the next token from input.
+
+  tokenLex :: m (Located token)
+  tokenLex =
+    tokenRun pure
+
+  -- | Convert the whole input into its lexical tokens all at once.
+
+  tokensLex :: m [Located token]
+
+-- | A simple tokenizer monad backed by 'Parsec'.
 
 type Tokenize = Parsec Text ()
+
+instance MonadToken (Token 'Layout) Tokenize where
+  tokenLex = go
+    where
+      go = choice
+        [
+          located visible
+        , newline
+        , space *> go
+        ]
+
+  tokensLex = go []
+    where
+      go xs = tokenRun @_ @Tokenize $ \t -> do
+        input <- getInput
+        if Text.null input then
+          pure xs
+        else
+          go (xs ++ [t])
 
 -- | Convert a raw text input into a stream of tokens.
 
@@ -82,81 +95,66 @@ tokenize ::
   m [Located (Token 'Layout)]
 
 tokenize line path text =
-  case Parsec.parse go path text of
+  case parse tokensLex path text of
     Left errs -> do
       report $ Report.parseError errs
       halt
     Right result -> pure result
-  where
-    go = do
-      pos <- Parsec.getPosition
-      Parsec.setPosition (Parsec.setSourceLine pos line)
-      tokens <* Parsec.eof
+
+{-# INLINE tokenize #-}
 
 -- | Newlines and indentation.
 
 newline :: Tokenize (Located (Token 'Layout))
 newline = do
-  void Parsec.endOfLine
-  void Parsec.spaces
-  locateToken (Indent <$> Parsec.sourceColumn <$> Parsec.getPosition)
-
--- | Add location information to a tokenizer.
-
-locateToken ::
-  Tokenize (Token 'Layout) ->
-  Tokenize (Located (Token 'Layout))
-
-locateToken p = do
-  begin <- Parsec.getPosition
-  result <- p
-  end <- Parsec.getPosition
-  pure $ At (Located.range begin end) result
+  void endOfLine
+  void spaces
+  located (Indent <$> sourceColumn <$> getPosition)
 
 -- | Visible tokens.
 
 visible :: Tokenize (Token 'Layout)
-visible = Parsec.choice
+visible = choice
   [
     operator
   , word
   , character
-  , BracketL <$ Parsec.char '['
-  , BracketR <$ Parsec.char ']'
-  , Comma <$ Parsec.char ','
-  , Lambda <$ Parsec.char '\\'
-  , ParenL <$ Parsec.char '('
-  , ParenR <$ Parsec.char ')'
+  , BracketL <$ char '['
+  , BracketR <$ char ']'
+  , Comma <$ char ','
+  , Lambda <$ char '\\'
+  , ParenL <$ char '('
+  , ParenR <$ char ')'
   ]
 
 character :: Tokenize (Token 'Layout)
-character = Parsec.between singleQuote singleQuote $ do
-  Character <$> Parsec.choice
+character = between singleQuote singleQuote $ do
+  Character <$> choice
     [
-      Parsec.char '\n' *> Parsec.unexpected ""
-    , singleQuote *> Parsec.unexpected ""
-    , Parsec.char '\\' *> escape
-    , Parsec.anyChar
+      char '\n' *> unexpected ""
+    , singleQuote *> unexpected ""
+    , char '\\' *> escape
+    , anyChar
     ]
   where
-    escape = Parsec.choice
+    escape = choice
       [
-        Parsec.oneOf "\\\"\'"
-      , '\a' <$ Parsec.char 'a'
-      , '\b' <$ Parsec.char 'b'
-      , '\f' <$ Parsec.char 'f'
-      , '\n' <$ Parsec.char 'n'
-      , '\r' <$ Parsec.char 'r'
-      , '\t' <$ Parsec.char 't'
-      , '\v' <$ Parsec.char 'v'
-      , Parsec.space <* Parsec.spaces
+        oneOf "\\\"\'"
+      , '\a' <$ char 'a'
+      , '\b' <$ char 'b'
+      , '\f' <$ char 'f'
+      , '\n' <$ char 'n'
+      , '\r' <$ char 'r'
+      , '\t' <$ char 't'
+      , '\v' <$ char 'v'
+      , space <* spaces
       ]
 
 colon :: Tokenize (Token 'Layout)
-colon = Colon <$ Parsec.char ':' <* Parsec.notFollowedBy symbol
+colon = Colon <$ char ':' <* notFollowedBy symbol
 
 equals :: Tokenize (Token 'Layout)
-equals = Equals <$ Parsec.char '=' <* Parsec.notFollowedBy symbol
+equals = Equals <$ char '=' <* notFollowedBy symbol
 
 operator :: Tokenize (Token 'Layout)
 operator = do
@@ -190,29 +188,23 @@ alphanumeric = do
   xs <- many (letter <|> underscore <|> digit)
   pure $ Text.pack $ x : xs
 
-digit :: Tokenize Char
-digit = Parsec.digit
-
-letter :: Tokenize Char
-letter = Parsec.satisfy isLetter
-
 doubleQuote :: Tokenize Char
-doubleQuote = Parsec.char '\"'
+doubleQuote = char '\"'
 
 singleQuote :: Tokenize Char
-singleQuote = Parsec.char '\''
+singleQuote = char '\''
 
 special :: Tokenize Char
-special = Parsec.oneOf "\"'(),[\\]_{}"
+special = oneOf "\"'(),[\\]_{}"
 
 symbol :: Tokenize Char
 symbol = do
-  Parsec.notFollowedBy special
-  Parsec.choice
+  notFollowedBy special
+  choice
     [
-      Parsec.satisfy isSymbol
-    , Parsec.satisfy isPunctuation
+      satisfy isSymbol
+    , satisfy isPunctuation
     ]
 
 underscore :: Tokenize Char
-underscore = Parsec.char '_'
+underscore = char '_'
