@@ -1,18 +1,20 @@
 module HaskellLike.Report where
 
 import Prelude
+import Prettyprinter (Doc)
 import Prettyprinter qualified as Pretty
-import Text.Parsec qualified as Parsec
 
 import HaskellLike.Located (Span)
 import HaskellLike.Located qualified as Located
+import HaskellLike.Parsec (pos)
+import HaskellLike.Parsec (ParseError, errorPos)
 
 data Report
-  = ParseError !Span Parsec.ParseError
-  | Context [(Span, Pretty.Doc ())] Report
+  = ParseError !Span ParseError
+  | Context [(Span, Doc ())] Report
 
-parseError :: Parsec.ParseError -> Report
+parseError :: ParseError -> Report
 parseError parsecError =
   ParseError origin parsecError
   where
-    origin = Located.pos $ Parsec.errorPos parsecError    
+    origin = pos $ errorPos parsecError    

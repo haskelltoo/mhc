@@ -8,7 +8,6 @@ import Data.Text (Text)
 import Data.Text qualified as Text
 import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
-import Text.Parsec.Pos
 
 data Located a = At Span a
 
@@ -58,26 +57,6 @@ instance Pretty Span where
           ]
     ]
 
-range :: SourcePos -> SourcePos -> Span
-range begin end = Span
-  {
-    name = Text.pack (sourceName begin)
-  , beginLine = sourceLine begin
-  , beginColumn = sourceColumn begin
-  , endLine = sourceLine end
-  , endColumn = sourceColumn end
-  }
-
-point :: SourceName -> Line -> Column -> Span
-point name line column = Span
-  {
-    name = Text.pack name
-  , beginLine = line
-  , beginColumn = column
-  , endLine = line
-  , endColumn = column
-  }
-
 beginningOf :: Span -> Span
 beginningOf span = span
   {
@@ -91,10 +70,3 @@ endOf span = span
     beginLine = span.endLine
   , beginColumn = span.endColumn
   }
-
-pos :: SourcePos -> Span
-pos = point <$> sourceName <*> sourceLine <*> sourceColumn
-
-parsecBeginning :: Span -> SourcePos
-parsecBeginning Span{name, beginLine, beginColumn} =
-  newPos (Text.unpack name) beginLine beginColumn

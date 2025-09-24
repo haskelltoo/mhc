@@ -5,11 +5,13 @@ module HaskellLike.Parsec
   -- * Main Parsec interface
   parse,
   Parsec,
+  runParser,
   runParserT,
   ParsecT,
 
   -- * Combinators
   anyChar,
+  anyToken,
   between,
   char,
   choice,
@@ -30,6 +32,8 @@ module HaskellLike.Parsec
   point,
   pos,
   range,
+  beginningOf,
+  endingOf,
   -- ** Internal to Parsec
   Column,
   Line,
@@ -107,3 +111,11 @@ fromLocated (At Span{..} a) =
     end = newPos (Text.unpack name) endLine endColumn
   in
     (a, begin, end)
+
+beginningOf :: Span -> SourcePos
+beginningOf Span{..} =
+  newPos (Text.unpack name) beginLine beginColumn
+
+endingOf :: Span -> SourcePos
+endingOf Span{..} =
+  newPos (Text.unpack name) endLine endColumn
