@@ -67,18 +67,17 @@ class Monad m => MonadToken token m where
 type Tokenize = Parsec Text ()
 
 instance MonadToken (Token 'Layout) Tokenize where
-  tokenLex = go
-    where
-      go = choice
-        [
-          located visible
-        , newline
-        , space *> go
-        ]
+
+  tokenLex = choice
+    [
+      located visible
+    , newline
+    , space *> tokenLex
+    ]
 
   tokensLex = go []
     where
-      go xs = tokenRun @_ @Tokenize $ \t -> do
+      go xs = tokenRun $ \t -> do
         input <- getInput
         if Text.null input then
           pure xs
