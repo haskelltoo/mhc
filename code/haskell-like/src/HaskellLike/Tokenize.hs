@@ -26,7 +26,6 @@ module HaskellLike.Tokenize
 
 import Prelude
 import Control.Applicative
-import Control.Monad
 import Data.Char
 import Data.Functor
 import Data.Text (Text)
@@ -34,7 +33,6 @@ import Data.Text qualified as Text
 
 import HaskellLike.Inform
 import HaskellLike.Located (Located (..))
-import HaskellLike.Located qualified as Located
 import HaskellLike.Name
 import HaskellLike.Parsec
 import HaskellLike.Report qualified as Report
