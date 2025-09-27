@@ -112,6 +112,7 @@ newline = do
     GT -> anyToken
     EQ -> pure (At loc Newline)
     LT -> do
+      popContext
       pushState (InsertDedent loc)
       pure (At loc End)
 
@@ -120,7 +121,7 @@ compareContext indent = do
   ctx <- getContext
   case ctx of
     []  -> pure GT
-    n:_ -> pure $ compare n indent
+    n:_ -> pure $ compare indent n
   
 indentation :: Layoutize Int
 indentation =
@@ -196,7 +197,7 @@ initLayoutState layoutKeywords =
 
 anyToken :: Layoutize (Located (Token 'NonLayout))
 anyToken = tokenPrim
-  (\(At loc token) -> trace (show token) $ At loc <$> Token.fromLayout token)
+  (\(At loc token) -> At loc <$> Token.fromLayout token)
 
 satisfy :: (Show token, Monad m) =>
   (Located token -> Bool) ->
