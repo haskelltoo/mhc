@@ -31,22 +31,23 @@ import HaskellLike.Token qualified as Token
 import HaskellLike.Tokenize (
     MonadToken (..),
   )
+import Text.Parsec (lookAhead)
 
 instance MonadToken (Token 'NonLayout) Layoutize where
 
-  tokenLex = do
-    state <- popState
-    case state of
-      Zero -> try anyToken <|> newline
-      InsertDedent loc -> do
-        indent <- getIndentLevel
-        r <- compareContext indent
-        case r of
-          LT -> do
-            popContext
-            pushState (InsertDedent loc)
-            pure (At loc End)
-          _  -> anyToken
+  tokenLex =
+    do
+      state <- popState
+      case state of
+        Zero -> layoutKeyword <|> anyToken <|> newline'
+        DoNewLayoutContext -> newLayoutContext
+        DoNewline loc -> newline loc
+        DoEmptyLayout loc -> pure $ At loc End
+    where
+      newline' = do
+        At loc _ <- located indentation
+        pushState (DoNewline loc)
+        tokenLex
 
   tokensLex = reverse <$> go []
     where
@@ -79,56 +80,60 @@ layoutize kws path tokens =
 defaultKws :: [Keyword]
 defaultKws = [Do, Let, Of, Where]
 
-layoutKeyword :: [Keyword] -> Layoutize (Located (Token 'NonLayout))
-layoutKeyword kws = tokenPrim go
+layoutKeyword :: Layoutize (Located (Token 'NonLayout))
+layoutKeyword =
+  do
+    kws <- getLayoutKeywords
+    kw <- tokenPrim (go kws)
+    pushState DoNewLayoutContext
+    pure kw
   where
-    go (At loc (SpecialWord kw)) =
-      if kw `elem` kws then
-        Just (At loc (Keyword kw))
-      else
-        Nothing
-    go _ = Nothing
+    go :: [Keyword] -> Located (Token 'Layout) -> Maybe (Located (Token 'NonLayout))
+    go kws (At loc token) =
+      case token of
+        SpecialWord kw ->
+          if kw `elem` kws then
+            Just $ At loc (Keyword kw)
+          else
+            Nothing
+        _ -> Nothing
 
-begin :: [Keyword] -> Layoutize [Located (Token 'NonLayout)]
-begin kws = liftA2 (:) (layoutKeyword kws) begin'
-
-begin' :: Layoutize [Located (Token 'NonLayout)]
-begin' = do
-  loc <- getPosition
+newLayoutContext :: Layoutize (Located (Token 'NonLayout))
+newLayoutContext = do
+  At loc _ <- located indentation
   ctx <- getContext
-  indent <- indentation
+  indent <- getIndentLevel
   case ctx of
-    n:_ | indent <= n ->
-      pure [At (pos loc) Begin, At (pos loc) End]
+    n:_ | indent <= n -> do
+      pushState (DoEmptyLayout loc)
+      pure $ At loc Begin
     _ -> do
       pushContext indent
-      pure [At (pos loc) Begin]
+      pure $ At loc Begin
 
-newline :: Layoutize (Located (Token 'NonLayout))
-newline = do
-  At loc lineIndent <- located indentation
-  r <- compareContext lineIndent
-  case r of
+newline :: Span -> Layoutize (Located (Token 'NonLayout))
+newline loc = do
+  indent <- compareIndent
+  case indent of
     GT -> anyToken
     EQ -> pure (At loc Newline)
     LT -> do
       popContext
-      pushState (InsertDedent loc)
+      pushState (DoNewline loc)
       pure (At loc End)
 
-compareContext :: Int -> Layoutize Ordering
-compareContext indent = do
+compareIndent :: Layoutize Ordering
+compareIndent = do
   ctx <- getContext
   case ctx of
     []  -> pure GT
-    n:_ -> pure $ compare indent n
+    n:_ -> flip compare n <$> getIndentLevel
   
-indentation :: Layoutize Int
+indentation :: Layoutize ()
 indentation =
   do
-    n <- tokenPrim go
+    At loc n <- located $ tokenPrim go
     setIndentLevel n
-    pure n
   where
     go :: Located (Token 'Layout) -> Maybe Int
     go token =
@@ -148,7 +153,9 @@ data LayoutState = LayoutState
 
 data LayoutControl
   = Zero
-  | InsertDedent Span
+  | DoNewLayoutContext
+  | DoNewline Span
+  | DoEmptyLayout Span
 
 popState :: Layoutize LayoutControl
 popState = do
