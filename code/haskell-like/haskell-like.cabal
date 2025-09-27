@@ -9,8 +9,10 @@ library
   exposed-modules:
     HaskellLike.Frontend
     HaskellLike.Inform
+    HaskellLike.Layoutize
     HaskellLike.Located
     HaskellLike.Name
+    HaskellLike.Parsec
     HaskellLike.Report
     HaskellLike.Token
     HaskellLike.Tokenize
@@ -24,11 +26,15 @@ library
     , transformers
   default-language: Haskell2010
   default-extensions:
+    FlexibleContexts
+    FlexibleInstances
     ImportQualifiedPost
     KindSignatures
+    MultiParamTypeClasses
     NoImplicitPrelude
     NoStarIsType
     RankNTypes
     ScopedTypeVariables
     TupleSections
+    TypeAbstractions
     TypeApplications

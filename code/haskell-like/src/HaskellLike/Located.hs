@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 
 module HaskellLike.Located where
@@ -7,12 +8,26 @@ import Data.Text (Text)
 import Data.Text qualified as Text
 import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
-import Text.Parsec.Pos
 
 data Located a = At Span a
 
+instance Functor Located where
+  fmap f (At origin a) = At origin (f a) 
+
 instance Show a => Show (Located a) where
   show (At _ a) = show a
+
+unLoc :: Located a -> a
+unLoc (At origin a) = a
+
+at :: a -> Located b -> Located a
+at a (At loc _) = At loc a
+
+atBeginningOf :: a -> Located b -> Located a
+atBeginningOf a (At loc _) = At (beginningOf loc) a
+
+atEndOf :: a -> Located b -> Located a
+atEndOf a (At loc _) = At (endOf loc) a
 
 data Span = Span
   {
@@ -42,25 +57,16 @@ instance Pretty Span where
           ]
     ]
 
-range :: SourcePos -> SourcePos -> Span
-range begin end = Span
+beginningOf :: Span -> Span
+beginningOf span = span
   {
-    name = Text.pack (sourceName begin)
-  , beginLine = sourceLine begin
-  , beginColumn = sourceColumn begin
-  , endLine = sourceLine end
-  , endColumn = sourceColumn end
+    endLine = span.beginLine
+  , endColumn = span.beginColumn
   }
 
-point :: SourceName -> Line -> Column -> Span
-point name line column = Span
+endOf :: Span -> Span
+endOf span = span
   {
-    name = Text.pack name
-  , beginLine = line
-  , beginColumn = column
-  , endLine = line
-  , endColumn = column
+    beginLine = span.endLine
+  , beginColumn = span.endColumn
   }
-
-pos :: SourcePos -> Span
-pos = point <$> sourceName <*> sourceLine <*> sourceColumn

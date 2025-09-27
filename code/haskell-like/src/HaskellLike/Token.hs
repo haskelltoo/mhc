@@ -3,12 +3,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module HaskellLike.Token
-  ( -- * Tokens
-    Token (..)
-  , Keyword (..)
+  (
+  -- * Tokens
+  Token (..),
+  Keyword (..),
 
-    -- * Layout
-  , Layoutness (..)
+  -- * Layout
+  fromLayout,
+  Layoutness (..),
   ) where
 
 import Prelude
@@ -162,4 +164,24 @@ data Layoutness
   = Layout
   | NonLayout
   deriving (Eq, Show)
-  
+
+fromLayout :: Token 'Layout -> Maybe (Token 'NonLayout)
+fromLayout token =
+  case token of
+    ArrowL -> Just ArrowL
+    ArrowR -> Just ArrowR
+    BracketL -> Just BracketL
+    BracketR -> Just BracketR
+    Character c -> Just (Character c)
+    Colon -> Just Colon
+    Comma -> Just Comma
+    Equals -> Just Equals
+    Indent _ -> Nothing
+    Integer x -> Just (Integer x)
+    Lambda -> Just Lambda
+    Operator op -> Just (Operator op)
+    SpecialWord kw -> Just (Keyword kw)
+    ParenL -> Just ParenL
+    ParenR -> Just ParenR
+    Underscore -> Just Underscore
+    Word word -> Just (Word word)

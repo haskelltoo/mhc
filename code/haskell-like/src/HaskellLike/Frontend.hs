@@ -1,23 +1,27 @@
 module HaskellLike.Frontend
-  ( -- * Reporting
-    MonadInform (..)
-  , Report (..)
-  , Span
-  , Located (..)
+  (
+  -- * Token and layout analysis
+  MonadToken (..),
+  tokenize,
+  layoutize,
+  Token,
+  Keyword (..),
+  Unqualified (..),
 
-    -- * Tokens
-  , tokenize
-  , Token (..)
-  , Keyword (..)
-  , Unqualified (..)
+  -- * Locations
+  Located (At),
+  Span,
 
-    -- * Layout
-  , Layoutness (..)
+  -- * Reporting
+  Report (..),
+  MonadInform (..),
   ) where
 
 import HaskellLike.Inform
-import HaskellLike.Located
+import HaskellLike.Layoutize (layoutize)
+import HaskellLike.Located (Located (..), Span)
 import HaskellLike.Name
-import HaskellLike.Report
+import HaskellLike.Parsec
+import HaskellLike.Report (Report (..))
 import HaskellLike.Token
-import HaskellLike.Tokenize (tokenize)
+import HaskellLike.Tokenize (MonadToken (..), tokenize)
