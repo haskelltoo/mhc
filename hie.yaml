@@ -5,12 +5,13 @@ cradle:
 
     - path: "code/hanjiru/apps/demo"
       component: "exe:demo"
-
-    - path: "code/haskell-like/src"
-      component: "lib:haskell-like"
       
-    - path: "code/mhc/src"
+    - path: "code/haskell"
+      component: "lib:haskell-mhc"
+
+    - path: "code/haskell-like"
+      component: "lib:haskell-like-mhc"
+      
+    - path: "code/mhc"
       component: "lib:mhc"
       
-    - path: "code/mhc-haskell/src"
-      component: "lib:mhc-haskell"
