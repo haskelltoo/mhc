@@ -1,10 +1,10 @@
-module HaskellLike.Inform where
+module HaskellLike.MHC.Inform where
 
 import Prelude
 import Prettyprinter qualified as Pretty
 
-import HaskellLike.Located
-import HaskellLike.Report
+import HaskellLike.MHC.Located
+import HaskellLike.MHC.Report
 
 -- | Monads with informative reporting.
 

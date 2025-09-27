@@ -2,7 +2,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module HaskellLike.Token
+module HaskellLike.MHC.Token
   (
   -- * Tokens
   Token (..),
@@ -16,7 +16,7 @@ module HaskellLike.Token
 import Prelude
 import Prettyprinter
 
-import HaskellLike.Name
+import HaskellLike.MHC.Name
 
 data Token (l :: Layoutness) where
 

@@ -2,29 +2,29 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
-module HaskellLike.Layoutize where
+module HaskellLike.MHC.Layoutize where
 
 import Prelude
 import Control.Applicative
 import Data.List.NonEmpty (NonEmpty)
 import Data.List.NonEmpty qualified as NonEmpty
 
-import HaskellLike.Inform
-import HaskellLike.Located (
+import HaskellLike.MHC.Inform
+import HaskellLike.MHC.Located (
     Located (At),
     Span,
     unLoc,
   )
-import HaskellLike.Parsec hiding (anyToken, tokenPrim)
-import HaskellLike.Parsec qualified as Parsec
-import HaskellLike.Report qualified as Report
-import HaskellLike.Token (
+import HaskellLike.MHC.Parsec hiding (anyToken, tokenPrim)
+import HaskellLike.MHC.Parsec qualified as Parsec
+import HaskellLike.MHC.Report qualified as Report
+import HaskellLike.MHC.Token (
     Token (..),
     Keyword (..),
     Layoutness (..),
   )
-import HaskellLike.Token qualified as Token
-import HaskellLike.Tokenize (
+import HaskellLike.MHC.Token qualified as Token
+import HaskellLike.MHC.Tokenize (
     MonadToken (..),
   )
 

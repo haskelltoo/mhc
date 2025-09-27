@@ -1,7 +1,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 
-module HaskellLike.Located where
+module HaskellLike.MHC.Located where
 
 import Prelude
 import Data.Text (Text)
