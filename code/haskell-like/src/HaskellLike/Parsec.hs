@@ -24,6 +24,7 @@ module HaskellLike.Parsec
   satisfy,
   space,
   spaces,
+  tokenPrim,
   try,
   unexpected,
 
