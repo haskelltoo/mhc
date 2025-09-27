@@ -1,0 +1,2 @@
+module Haskell.MHC where
+  

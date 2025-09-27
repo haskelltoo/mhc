@@ -52,6 +52,19 @@ let
         license = licenses.bsd3;
       }
       {
+        name = "haskell-mhc";
+        version = "0";
+        src = ./code/haskell;
+
+        buildInputs = hackage: with hackage; [
+          base
+          self.hanjiru
+          text
+        ];
+
+        license = licenses.bsd3;
+      }
+      {
         name = "mhc";
         version = "0";
         src = ./code/mhc;
@@ -59,20 +72,7 @@ let
         buildInputs = hackage: with hackage; [
           base
           self.hanjiru
-          self.mhc-haskell
-          text
-        ];
-
-        license = licenses.bsd3;
-      }
-      {
-        name = "mhc-haskell";
-        version = "0";
-        src = ./code/mhc-haskell;
-
-        buildInputs = hackage: with hackage; [
-          base
-          self.hanjiru
+          self.haskell-mhc
           text
         ];
 
@@ -102,8 +102,8 @@ in
     inherit (built.outputs)
       hanjiru
       haskell-like
-      mhc
-      mhc-haskell;
+      haskell-mhc
+      mhc;
     default = built.outputs.mhc;
   };
 
