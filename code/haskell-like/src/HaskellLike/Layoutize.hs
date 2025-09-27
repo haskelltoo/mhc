@@ -8,19 +8,15 @@ import Prelude
 import Control.Applicative
 import Data.List.NonEmpty (NonEmpty)
 import Data.List.NonEmpty qualified as NonEmpty
-import Debug.Trace
-import Text.Parsec qualified as Parsec
 
 import HaskellLike.Inform
 import HaskellLike.Located (
     Located (At),
     Span,
-    at,
-    atBeginningOf,
-    atEndOf,
     unLoc,
   )
-import HaskellLike.Parsec hiding (anyToken)
+import HaskellLike.Parsec hiding (anyToken, tokenPrim)
+import HaskellLike.Parsec qualified as Parsec
 import HaskellLike.Report qualified as Report
 import HaskellLike.Token (
     Token (..),
@@ -31,7 +27,6 @@ import HaskellLike.Token qualified as Token
 import HaskellLike.Tokenize (
     MonadToken (..),
   )
-import Text.Parsec (lookAhead)
 
 instance MonadToken (Token 'NonLayout) Layoutize where
 
