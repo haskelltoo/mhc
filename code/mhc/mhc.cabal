@@ -9,7 +9,7 @@ library
   exposed-modules:
     MHC
   other-modules:
-  hs-source-dirs: src
+  hs-source-dirs: .
   build-depends:
     , base ^>= 4.20
     , hanjiru
