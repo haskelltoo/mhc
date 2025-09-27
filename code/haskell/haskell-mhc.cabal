@@ -1,15 +1,15 @@
 cabal-version: 3.4
 
-name: mhc-haskell
+name: haskell-mhc
 version: 0
 
 build-type: Simple
 
 library
   exposed-modules:
-    Haskell.Syntax
+    Haskell.MHC
   other-modules:
-  hs-source-dirs: src
+  hs-source-dirs: .
   build-depends:
     , base ^>= 4.20
     , hanjiru

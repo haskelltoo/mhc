@@ -1,4 +1,4 @@
-module HaskellLike.Name where
+module HaskellLike.MHC.Name where
 
 import Prelude (Show)
 import Data.Char (isLetter)

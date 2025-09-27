@@ -2,7 +2,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module HaskellLike.Tokenize
+module HaskellLike.MHC.Tokenize
   (
   -- * Main interface
   MonadToken (..),
@@ -32,12 +32,12 @@ import Data.Functor
 import Data.Text (Text)
 import Data.Text qualified as Text
 
-import HaskellLike.Inform
-import HaskellLike.Located (Located (..))
-import HaskellLike.Name
-import HaskellLike.Parsec
-import HaskellLike.Report qualified as Report
-import HaskellLike.Token
+import HaskellLike.MHC.Inform
+import HaskellLike.MHC.Located (Located (..))
+import HaskellLike.MHC.Name
+import HaskellLike.MHC.Parsec
+import HaskellLike.MHC.Report qualified as Report
+import HaskellLike.MHC.Token
 
 -- | Monad capable of lexical analysis on a hidden input string.
 

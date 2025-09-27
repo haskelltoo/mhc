@@ -1,2 +1,0 @@
-module Haskell.Syntax where
-  

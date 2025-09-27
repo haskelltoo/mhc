@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module HaskellLike.Parsec
+module HaskellLike.MHC.Parsec
   (
   -- * Main Parsec interface
   parse,
@@ -72,8 +72,8 @@ import Data.Text qualified as Text
 import Text.Parsec
 import Text.Parsec.Pos
 
-import HaskellLike.Located (Located (At), Span(..))
-import HaskellLike.Located qualified
+import HaskellLike.MHC.Located (Located (At), Span(..))
+import HaskellLike.MHC.Located qualified
 
 located :: Monad m => ParsecT s u m a -> ParsecT s u m (Located a)
 located p = do

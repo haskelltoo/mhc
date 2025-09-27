@@ -1,22 +1,22 @@
 cabal-version: 3.4
 
-name: haskell-like
+name: haskell-like-mhc
 version: 0
 
 build-type: Simple
 
 library
   exposed-modules:
-    HaskellLike.Frontend
-    HaskellLike.Inform
-    HaskellLike.Layoutize
-    HaskellLike.Located
-    HaskellLike.Name
-    HaskellLike.Parsec
-    HaskellLike.Report
-    HaskellLike.Token
-    HaskellLike.Tokenize
-  hs-source-dirs: src
+    HaskellLike.MHC.Frontend
+    HaskellLike.MHC.Inform
+    HaskellLike.MHC.Layoutize
+    HaskellLike.MHC.Located
+    HaskellLike.MHC.Name
+    HaskellLike.MHC.Parsec
+    HaskellLike.MHC.Report
+    HaskellLike.MHC.Token
+    HaskellLike.MHC.Tokenize
+  hs-source-dirs: .
   build-depends:
     , base ^>= 4.20
     , containers
