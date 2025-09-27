@@ -36,7 +36,7 @@ let
         license = licenses.bsd3;
       }
       {
-        name = "haskell-like";
+        name = "haskell-like-mhc";
         version = "0";
         src = ./code/haskell-like;
 
@@ -101,7 +101,7 @@ in
   packages = {
     inherit (built.outputs)
       hanjiru
-      haskell-like
+      haskell-like-mhc
       haskell-mhc
       mhc;
     default = built.outputs.mhc;
