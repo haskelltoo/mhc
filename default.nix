@@ -65,6 +65,22 @@ let
         license = licenses.bsd3;
       }
       {
+        name = "hummingbird-mhc";
+        version = "0";
+        src = ./code/hummingbird;
+
+        buildInputs = hackage: with hackage; [
+          base
+          containers
+          self.haskell-like-mhc
+          parsec
+          text
+          transformers
+        ];
+
+        license = licenses.bsd3;
+      }
+      {
         name = "mhc";
         version = "0";
         src = ./code/mhc;

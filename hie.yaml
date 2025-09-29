@@ -11,6 +11,9 @@ cradle:
 
     - path: "code/haskell-like"
       component: "lib:haskell-like-mhc"
+    
+    - path: "code/hummingbird"
+      component: "lib:hummingbird-mhc"
       
     - path: "code/mhc"
       component: "lib:mhc"
