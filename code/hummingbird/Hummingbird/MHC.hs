@@ -1,6 +1,39 @@
 module Hummingbird.MHC
   (
-  Feather,
+  -- * Hummingbird
+
+  -- ** Modules
+  HbMod (..),
+
+  -- ** Declarations
+  Feather (..),
+  HbBind (..),
+  
+  -- ** Expressions
+  HbExpr (..),
+  Alt (..),
+  HbVal (..),
   ) where
 
-import Hummingbird.MHC.Feathers (Feather)
+import Prelude
+import Prettyprinter (Pretty (..))
+import Prettyprinter qualified as Pretty
+
+import Hummingbird.MHC.Bind
+import Hummingbird.MHC.Expr
+import Hummingbird.MHC.Feathers
+import Hummingbird.MHC.Name
+
+data HbMod = HbMod Name [Feather]
+
+instance Pretty HbMod where
+  pretty (HbMod name feathers) =
+    Pretty.vcat
+      [
+        Pretty.hsep
+          [
+            pretty name
+          , pretty "module"
+          ]
+      , Pretty.vcat $ map pretty feathers
+      ]
