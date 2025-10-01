@@ -1,21 +1,21 @@
 module Hummingbird.MHC.Expr where
 
+import Prelude
 import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
 
 import Hummingbird.MHC.Name
 
 data HbExpr
-  = Push HbVal
-  | Word Name
+  = Word Name
   | Lambda Name HbExpr
-  | Compose HbExpr HbExpr
   | Match [Alt]
+  | Quoted HbExpr
+  | Concat [HbExpr]
 
 instance Pretty HbExpr where
   pretty expr =
     case expr of
-      Push val -> pretty val
       Word word -> pretty word
       Lambda arg body ->
         Pretty.hcat
@@ -28,25 +28,13 @@ instance Pretty HbExpr where
               , pretty body
               ]
           ]
-      Compose lhs rhs ->
-        Pretty.hsep
-          [
-            pretty lhs
-          , pretty rhs
-          ]
       Match alts -> pretty alts
+      Quoted quoted ->
+        Pretty.brackets $ pretty quoted
+      Concat xs ->
+        Pretty.hsep $ map pretty xs
 
 data Alt
 
 instance Pretty Alt where
   pretty = pretty
-
-data HbVal
-  = Var Name
-  | Quotation HbExpr
-
-instance Pretty HbVal where
-  pretty val =
-    case val of
-      Var name -> pretty name
-      Quotation quote -> Pretty.brackets (pretty quote)

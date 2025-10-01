@@ -12,7 +12,6 @@ module Hummingbird.MHC
   -- ** Expressions
   HbExpr (..),
   Alt (..),
-  HbVal (..),
   ) where
 
 import Prelude
