@@ -176,6 +176,7 @@ word = do
     "in" -> SpecialWord In
     "instance" -> SpecialWord Instance
     "let" -> SpecialWord Let
+    "module" -> SpecialWord Module
     "of" -> SpecialWord Of
     "record" -> SpecialWord Record
     "where" -> SpecialWord Where

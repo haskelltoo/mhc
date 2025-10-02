@@ -18,6 +18,13 @@ import Hummingbird.MHC.Name
 
 import Hummingbird.MHC.Parsec
 
+hummingbirdP :: P HbMod
+hummingbirdP = do
+  modName <- nameP
+  expect $ Token.Keyword Token.Module
+  expect Token.Begin
+  HbMod modName <$> many (featherP <* expect Token.Newline)
+
 featherP :: P Feather
 featherP = do
   name <- nameP
