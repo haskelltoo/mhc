@@ -7,75 +7,53 @@ module Hummingbird.MHC.Parse where
 import Prelude
 import Control.Applicative
 import Control.Monad
-import Text.Parsec (Parsec)
-import Text.Parsec qualified as Parsec
 
 import HaskellLike.MHC.Frontend
 import HaskellLike.MHC.Located
 import HaskellLike.MHC.Parsec qualified as Parsec
-import HaskellLike.MHC.Token as Token
+import HaskellLike.MHC.Token qualified as Token
 
 import Hummingbird.MHC
 import Hummingbird.MHC.Name
 
+import Hummingbird.MHC.Parsec
+
 featherP :: P Feather
 featherP = do
   name <- nameP
-  Parsec.choice
+  choice
     [
-      Defn . Bind name <$ expect Equals <*> exprP
+      Defn <$> bindP name
     ]
 
+bindP :: Name -> P HbBind
+bindP name =
+  Bind name <$ expect Token.Equals <*> exprP
+
 exprP :: P HbExpr
-exprP =
-  foldl' Compose <$> go <*> many go
-  where
-    go = Parsec.choice
-      [
-        Push <$> varP
-      , Push <$> quotationP
-      ]
+exprP = do
+  xs <- some $ wordP <|> lambdaP <|> quotedP
+  case xs of
+    [x] -> pure x
+    _   -> pure $ Concat xs
 
-varP :: P HbVal
-varP = Var <$> nameP
+wordP :: P HbExpr
+wordP = Word <$> nameP
 
-quotationP :: P HbVal
-quotationP = Quotation <$> brackets exprP
+lambdaP :: P HbExpr
+lambdaP =
+  Lambda
+    <$ expect Token.Lambda <*> nameP
+    <* expect Token.ArrowR <*> exprP
 
-brackets :: P a -> P a
-brackets = Parsec.between (expect BracketL) (expect BracketR)
-
-type P = Parsec [Located (Token 'NonLayout)] ()
-
-instance MonadToken (Token 'NonLayout) P where
-  tokenLex = Parsec.anyToken
-  tokensLex = Parsec.getInput
+quotedP :: P HbExpr
+quotedP = Quoted <$> bracketP exprP
 
 nameP :: P Name
-nameP = tokenPrim go
-  where
-    go token =
-      case unLoc token of
-        Token.Word name -> Just name
-        _               -> Nothing
+nameP = unqualified
 
-expect :: (Show token, Eq token) => token -> Parsec [Located token] u ()
-expect token = void $ satisfy ((== token) . unLoc)
-
-satisfy :: (Show token) =>
-  (Located token -> Bool) ->
-  Parsec [Located token] u (Located token)
-
-satisfy predicate = tokenPrim
-  (\token -> if predicate token then Just token else Nothing)
-
-tokenPrim :: (Show token) =>
-  (Located token -> Maybe a) ->
-  Parsec [Located token] u a
-
-tokenPrim = Parsec.tokenPrim show advance
-  where
-    advance sourcePos _ tokens =
-      case tokens of
-        [] -> sourcePos
-        At origin _ : _ -> Parsec.beginningOf origin
+bracketP :: P a -> P a
+bracketP =
+  between
+    (expect Token.BracketL)
+    (expect Token.BracketR)
