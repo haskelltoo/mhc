@@ -8,6 +8,7 @@ import Hummingbird.MHC.Name
 
 data HbExpr
   = Word Name
+  | Lit Integer
   | Lambda Name HbExpr
   | Match [Alt]
   | Quoted HbExpr
@@ -17,6 +18,7 @@ instance Pretty HbExpr where
   pretty expr =
     case expr of
       Word word -> pretty word
+      Lit literal -> pretty literal
       Lambda arg body ->
         Pretty.hcat
           [
