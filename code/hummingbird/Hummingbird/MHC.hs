@@ -12,6 +12,9 @@ module Hummingbird.MHC
   -- ** Expressions
   HbExpr (..),
   Alt (..),
+
+  -- ** Types
+  HbType (..),
   ) where
 
 import Prelude
@@ -22,6 +25,7 @@ import Hummingbird.MHC.Bind
 import Hummingbird.MHC.Expr
 import Hummingbird.MHC.Feathers
 import Hummingbird.MHC.Name
+import Hummingbird.MHC.Type
 
 data HbMod = HbMod Name [Feather]
 

@@ -31,6 +31,7 @@ featherP = do
   choice
     [
       Defn <$> bindP name
+    , Sig name <$> sigP
     ]
 
 bindP :: Name -> P HbBind
@@ -56,6 +57,27 @@ lambdaP =
 quotedP :: P HbExpr
 quotedP = Quoted <$> bracketP exprP
 
+sigP :: P HbType
+sigP = expect Token.Colon *> funTyP
+
+typeP :: P HbType
+typeP = choice
+  [
+    VarTy <$> nameP
+  , try $ parenP funTyP
+  , try $ parenP $ ConcatTy <$> some typeP
+  ]
+
+funTyP :: P HbType
+funTyP =
+  FunTy <$> stackTyP <* expect Token.ArrowR <*> stackTyP
+
+stackTyP :: P HbType
+stackTyP = do
+  name <- nameP
+  expect (Token.Operator (Unqualified ".."))
+  StackTy name <$> many typeP
+
 nameP :: P Name
 nameP = unqualified
 
@@ -64,3 +86,9 @@ bracketP =
   between
     (expect Token.BracketL)
     (expect Token.BracketR)
+
+parenP :: P a -> P a
+parenP =
+  between
+    (expect Token.ParenL)
+    (expect Token.ParenR)
