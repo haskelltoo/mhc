@@ -17,11 +17,11 @@ module Hummingbird.MHC.Parsec
   unqualified,
   ) where
 
-import Prelude
-import Control.Applicative
-import Control.Monad
-import Text.Parsec (Parsec, ParsecT)
-import Text.Parsec qualified as Parsec
+import Applicative
+import Monad
+import Parsec (Parsec, ParsecT)
+import Parsec qualified
+import Prelude.GHC
 
 import HaskellLike.MHC.Located
 import HaskellLike.MHC.Name

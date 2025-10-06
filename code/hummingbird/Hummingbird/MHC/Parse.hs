@@ -4,9 +4,9 @@
 
 module Hummingbird.MHC.Parse where
 
-import Prelude
-import Control.Applicative
-import Control.Monad
+import Applicative
+import Monad
+import Prelude.GHC
 
 import HaskellLike.MHC.Frontend
 import HaskellLike.MHC.Located

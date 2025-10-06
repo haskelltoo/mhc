@@ -17,7 +17,7 @@ module Hummingbird.MHC
   HbType (..),
   ) where
 
-import Prelude
+import Prelude.GHC
 import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
 
@@ -38,5 +38,5 @@ instance Pretty HbMod where
             pretty name
           , pretty "module"
           ]
-      , Pretty.vcat $ map pretty feathers
+      , Pretty.vcat $ pretty <$> feathers
       ]

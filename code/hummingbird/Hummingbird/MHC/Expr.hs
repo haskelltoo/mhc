@@ -1,6 +1,6 @@
 module Hummingbird.MHC.Expr where
 
-import Prelude
+import Prelude.GHC
 import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
 
