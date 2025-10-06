@@ -9,8 +9,8 @@ module Hummingbird.MHC
   Feather (..),
   HbBind (..),
   
-  -- ** Expressions
-  HbExpr (..),
+  -- ** Terms
+  HbTerm (..),
   Alt (..),
 
   -- ** Types
@@ -22,9 +22,9 @@ import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
 
 import Hummingbird.MHC.Bind
-import Hummingbird.MHC.Expr
 import Hummingbird.MHC.Feathers
 import Hummingbird.MHC.Name
+import Hummingbird.MHC.Term
 import Hummingbird.MHC.Type
 
 data HbMod = HbMod Name [Feather]

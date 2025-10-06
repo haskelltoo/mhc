@@ -1,4 +1,4 @@
-module Hummingbird.MHC.Expr where
+module Hummingbird.MHC.Term where
 
 import Prelude.GHC
 import Prettyprinter (Pretty (..))
@@ -6,15 +6,15 @@ import Prettyprinter qualified as Pretty
 
 import Hummingbird.MHC.Name
 
-data HbExpr
+data HbTerm
   = Word Name
   | Lit Integer
-  | Lambda Name HbExpr
+  | Lambda Name HbTerm
   | Match [Alt]
-  | Quoted HbExpr
-  | Concat [HbExpr]
+  | Quoted HbTerm
+  | Concat [HbTerm]
 
-instance Pretty HbExpr where
+instance Pretty HbTerm where
   pretty expr =
     case expr of
       Word word -> pretty word

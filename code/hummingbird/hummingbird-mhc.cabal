@@ -9,10 +9,12 @@ library
   exposed-modules:
     Hummingbird.MHC
     Hummingbird.MHC.Bind
-    Hummingbird.MHC.Expr
     Hummingbird.MHC.Feathers
     Hummingbird.MHC.Name
     Hummingbird.MHC.Parse
+    Hummingbird.MHC.Parsec
+    Hummingbird.MHC.Term
+    Hummingbird.MHC.Type
   hs-source-dirs: .
   build-depends:
     , base ^>= 4.20
