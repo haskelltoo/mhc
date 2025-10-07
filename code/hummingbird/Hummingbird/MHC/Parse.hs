@@ -13,19 +13,19 @@ import HaskellLike.MHC.Located
 import HaskellLike.MHC.Parsec qualified as Parsec
 import HaskellLike.MHC.Token qualified as Token
 
-import Hummingbird.MHC
+import Hummingbird
 import Hummingbird.MHC.Name
 
 import Hummingbird.MHC.Parsec
 
-hummingbirdP :: P HbMod
+hummingbirdP :: P (HbMod Name ())
 hummingbirdP = do
   modName <- nameP
   expect $ Token.Keyword Token.Module
   expect Token.Begin
   HbMod modName <$> many (featherP <* expect Token.Newline)
 
-featherP :: P Feather
+featherP :: P (Feather Name ())
 featherP = do
   name <- nameP
   choice
@@ -34,33 +34,33 @@ featherP = do
     , Sig name <$> sigP
     ]
 
-bindP :: Name -> P HbBind
+bindP :: Name -> P (HbBind Name ())
 bindP name =
   Bind name <$ expect Token.Equals <*> termP
 
-termP :: P HbTerm
+termP :: P (HbTerm Name ())
 termP = do
   xs <- some $ wordP <|> lambdaP <|> quotedP
   case xs of
     [x] -> pure x
     _   -> pure $ Concat xs
 
-wordP :: P HbTerm
+wordP :: P (HbTerm Name ())
 wordP = Word <$> nameP
 
-lambdaP :: P HbTerm
+lambdaP :: P (HbTerm Name ())
 lambdaP =
   Lambda
     <$ expect Token.Lambda <*> nameP
     <* expect Token.ArrowR <*> termP
 
-quotedP :: P HbTerm
+quotedP :: P (HbTerm Name ())
 quotedP = Quoted <$> bracketP termP
 
-sigP :: P HbType
+sigP :: P (HbType Name ())
 sigP = expect Token.Colon *> funTyP
 
-typeP :: P HbType
+typeP :: P (HbType Name ())
 typeP = choice
   [
     VarTy <$> nameP
@@ -68,11 +68,11 @@ typeP = choice
   , try $ parenP $ ConcatTy <$> some typeP
   ]
 
-funTyP :: P HbType
+funTyP :: P (HbType Name ())
 funTyP =
   FunTy <$> stackTyP <* expect Token.ArrowR <*> stackTyP
 
-stackTyP :: P HbType
+stackTyP :: P (HbType Name ())
 stackTyP = do
   name <- nameP
   expect (Token.Operator (Unqualified ".."))
