@@ -8,14 +8,12 @@ module Hummingbird
   HbAlt (..),
   HbBind (..),
 
-  -- * Modules
-  HbMod (..),
-
-  -- * Declarations
-  Feather (..),
-
   -- * Types
   HbType (..),
+
+  -- * Declarations
+  HbMod (..),
+  Feather (..),
   ) where
 
 import Prelude.GHC
@@ -77,36 +75,6 @@ instance (Pretty binder, Pretty ty) => Pretty (HbBind binder ty) where
 
 type Literal = Integer
 
-data HbMod binder ty = HbMod binder [Feather binder ty]
-  deriving Show
-
-instance (Pretty binder, Pretty ty) => Pretty (HbMod binder ty) where
-  pretty hbMod = case hbMod of
-    HbMod name feathers ->
-      Pretty.vcat
-        [
-          Pretty.hsep
-            [
-              pretty name
-            , pretty "module"
-            ]
-        , Pretty.vcat $ pretty <$> feathers
-        ]
-
--- | 'Feather's are the topmost fragments of a Hummingbird program.
-
-data Feather binder ty
-  = Defn (HbBind binder ty)
-  | Sig binder (HbType binder ty)
-  deriving Show
-
-instance (Pretty binder, Pretty ty) => Pretty (Feather binder ty) where
-  pretty feather = case feather of
-    Defn bind -> pretty bind
-    Sig name ty ->
-      Pretty.hsep
-        [pretty name, Pretty.colon, pretty ty]
-
 data HbType binder ty
   = StackTy binder [HbType binder ty]
   | ConTy binder
@@ -138,4 +106,34 @@ instance (Pretty binder, Pretty ty) => Pretty (HbType binder ty) where
           ]
     ConcatTy tys ->
       Pretty.hsep $ map pretty tys
+
+data HbMod binder ty = HbMod binder [Feather binder ty]
+  deriving Show
+
+-- | 'Feather's are the topmost fragments of a Hummingbird program.
+
+data Feather binder ty
+  = Defn (HbBind binder ty)
+  | Sig binder (HbType binder ty)
+  deriving Show
+
+instance (Pretty binder, Pretty ty) => Pretty (HbMod binder ty) where
+  pretty hbMod = case hbMod of
+    HbMod name feathers ->
+      Pretty.vcat
+        [
+          Pretty.hsep
+            [
+              pretty name
+            , pretty "module"
+            ]
+        , Pretty.vcat $ pretty <$> feathers
+        ]
+
+instance (Pretty binder, Pretty ty) => Pretty (Feather binder ty) where
+  pretty feather = case feather of
+    Defn bind -> pretty bind
+    Sig name ty ->
+      Pretty.hsep
+        [pretty name, Pretty.colon, pretty ty]
 
