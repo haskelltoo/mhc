@@ -36,14 +36,24 @@ featherP = do
 
 bindP :: Name -> P (HbBind Name ())
 bindP name =
-  Bind name <$ expect Token.Equals <*> termP
+  Bind name <$ expect Token.Equals <*> someTermsP
 
-termP :: P (HbTerm Name ())
-termP = do
-  xs <- some $ wordP <|> lambdaP <|> quotedP
+someTermsP :: P (HbTerm Name ())
+someTermsP = do
+  xs <- some termP
   case xs of
     [x] -> pure x
     _   -> pure $ Concat xs
+
+termsP :: P (HbTerm Name ())
+termsP = do
+  xs <- many termP
+  case xs of
+    [x] -> pure x
+    _   -> pure $ Concat xs
+
+termP :: P (HbTerm Name ())
+termP = wordP <|> lambdaP <|> quotedP <|> parenP someTermsP
 
 wordP :: P (HbTerm Name ())
 wordP = Word <$> nameP
@@ -52,10 +62,10 @@ lambdaP :: P (HbTerm Name ())
 lambdaP =
   Lambda
     <$ expect Token.Lambda <*> nameP
-    <* expect Token.ArrowR <*> termP
+    <* expect Token.ArrowR <*> someTermsP
 
 quotedP :: P (HbTerm Name ())
-quotedP = Quoted <$> bracketP termP
+quotedP = Quoted <$> bracketP termsP
 
 sigP :: P (HbType Name ())
 sigP = expect Token.Colon *> funTyP
