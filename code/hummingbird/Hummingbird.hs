@@ -8,6 +8,9 @@ module Hummingbird
   HbAlt (..),
   HbBind (..),
 
+  -- * Literals
+  HbLiteral (..),
+
   -- * Types
   HbType (..),
 
@@ -28,14 +31,6 @@ data HbTerm binder ty
   | Match [HbAlt binder ty]
   | Quoted (HbTerm binder ty)
   | Concat [HbTerm binder ty]
-  deriving Show
-
--- |
-
-data HbLiteral
-  = CharLit Char
-  | IntLit Integer
-  | StringLit Text
   deriving Show
 
 -- |
@@ -70,12 +65,6 @@ instance (Pretty binder, Pretty ty) => Pretty (HbTerm binder ty) where
     Concat xs ->
       Pretty.hsep $ map pretty xs
 
-instance Pretty HbLiteral where
-  pretty lit = case lit of
-    CharLit char -> pretty char
-    IntLit int -> pretty int
-    StringLit string -> pretty string
-
 instance (Pretty binder, Pretty ty) => Pretty (HbAlt binder ty) where
   pretty alt = case alt of
     LitAlt literal term ->
@@ -91,6 +80,20 @@ instance (Pretty binder, Pretty ty) => Pretty (HbBind binder ty) where
     Bind name body ->
       Pretty.hsep
         [pretty name, Pretty.equals, pretty body]
+
+-- |
+
+data HbLiteral
+  = CharLit   Char
+  | IntLit    Integer
+  | StringLit Text
+  deriving Show
+
+instance Pretty HbLiteral where
+  pretty lit = case lit of
+    CharLit char -> pretty char
+    IntLit int -> pretty int
+    StringLit string -> pretty string
 
 -- |
 
