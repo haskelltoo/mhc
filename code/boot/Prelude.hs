@@ -108,15 +108,18 @@ module Prelude
   take,
   takeWhile,
 
-  -- * Strings
+  -- * Text
   Char,
-  Show (..),
   String,
   Text,
   lines,
   words,
   unlines,
   unwords,
+
+  -- * Printing
+  Pretty (..),
+  Show (..),
 
   -- * Folds and traversals
   Foldable (..),
@@ -241,3 +244,4 @@ import Data.Maybe
 import Data.Monoid
 import Data.Ord
 import Data.Text (Text)
+import Prettyprinter (Pretty (..))
