@@ -1,0 +1,30 @@
+cabal-version: 3.4
+
+name: hummingbird-mhc
+version: 0
+
+build-type: Simple
+
+library
+  exposed-modules:
+    Hummingbird
+    Hummingbird.MHC.Parse
+    Hummingbird.MHC.Parsec
+  hs-source-dirs: .
+  build-depends:
+    , boot-mhc
+    , haskell-like-mhc
+  default-language: Haskell2010
+  default-extensions:
+    FlexibleContexts
+    FlexibleInstances
+    ImportQualifiedPost
+    KindSignatures
+    MultiParamTypeClasses
+    NoImplicitPrelude
+    NoStarIsType
+    RankNTypes
+    ScopedTypeVariables
+    TupleSections
+    TypeAbstractions
+    TypeApplications

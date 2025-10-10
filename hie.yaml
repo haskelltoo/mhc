@@ -1,5 +1,8 @@
 cradle:
   cabal:
+    - path: "code/boot"
+      component: "lib:boot-mhc"
+
     - path: "code/hanjiru/src"
       component: "lib:hanjiru"
 
@@ -11,6 +14,9 @@ cradle:
 
     - path: "code/haskell-like"
       component: "lib:haskell-like-mhc"
+    
+    - path: "code/hummingbird"
+      component: "lib:hummingbird-mhc"
       
     - path: "code/mhc"
       component: "lib:mhc"

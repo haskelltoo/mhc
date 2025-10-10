@@ -1,0 +1,93 @@
+cabal-version: 3.4
+
+name: boot-mhc
+version: 0
+
+build-type: Simple
+
+library
+  exposed-modules:
+    Prelude
+  hs-source-dirs: .
+  reexported-modules:
+    , Control.Applicative as Applicative
+    , Control.Arrow as Arrow
+    , Control.Category as Category
+    , Control.Exception as Exception
+    , Control.Monad as Monad
+    , Control.Monad.Chronicle as Monad.Chronicle
+    , Control.Monad.Fail as Monad.Fail
+    , Control.Monad.Fix as Monad.Fix
+    , Control.Monad.IO.Class as Monad.IO
+    , Control.Monad.ST as ST
+    , Control.Monad.ST.Unsafe as ST.Unsafe
+    , Control.Monad.Trans.Class as Monad.Trans
+    , Control.Monad.Trans.Reader as Monad.Reader
+    , Control.Monad.Trans.State as Monad.State
+    , Control.Monad.Trans.Writer as Monad.Writer
+    , Data.Coerce as Coerce
+    , Data.Either as Either
+    , Data.Enum as Enum
+    , Data.Eq as Eq
+    , Data.Foldable as Foldable
+    , Data.Functor as Functor
+    , Data.Hashable as Hashable
+    , Data.HashMap.Lazy as HashMap.Lazy
+    , Data.HashMap.Strict as HashMap.Strict
+    , Data.Int as Int
+    , Data.IORef as IO.Ref
+    , Data.Kind as Kind
+    , Data.List as List
+    , Data.Map as Map
+    , Data.Maybe as Maybe
+    , Data.Monoid as Monoid
+    , Data.List.NonEmpty as NonEmpty.List
+    , Data.Proxy as Proxy
+    , Data.Semigroup as Semigroup
+    , Data.Set as Set
+    , Data.STRef as ST.Ref
+    , Data.Text as Text
+    , Data.These as These
+    , Data.Traversable as Traversable
+    , Data.Void as Void
+    , Data.Word as Word
+    , GHC.Generics as Generics
+    , GHC.IO as IO
+    , GHC.Num as Num
+    , GHC.TypeError as Kind.Error
+    , GHC.TypeLits as Kind.Literals
+    , GHC.TypeNats as Kind.Nat
+    , Numeric.Natural as Nat
+    , Prelude.GHC
+    , Prettyprinter
+    , Text.Parsec as Parsec
+    , Text.Parsec.Pos as Parsec.Pos
+    , Unsafe.Coerce as Coerce.Unsafe
+  build-depends:
+    , base ^>= 4.20
+    , containers
+    , hashable
+    , monad-chronicle
+    , parsec
+    , prettyprinter
+    , text
+    , these
+    , transformers
+    , unordered-containers
+  mixins:
+    , base (Prelude as Prelude.GHC)
+    , base hiding (Prelude)
+  default-language: Haskell2010
+  default-extensions:
+    FlexibleContexts
+    FlexibleInstances
+    ImportQualifiedPost
+    KindSignatures
+    MultiParamTypeClasses
+    NoImplicitPrelude
+    NoStarIsType
+    RankNTypes
+    ScopedTypeVariables
+    TupleSections
+    TypeAbstractions
+    TypeApplications

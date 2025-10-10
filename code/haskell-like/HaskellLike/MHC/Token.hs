@@ -140,6 +140,7 @@ data Keyword
   | In
   | Instance
   | Let
+  | Module
   | Of
   | Record
   | Where
@@ -154,6 +155,7 @@ instance Pretty Keyword where
     In -> "in"
     Instance -> "instance"
     Let -> "let"
+    Module -> "module"
     Of -> "of"
     Record -> "record"
     Where -> "where"

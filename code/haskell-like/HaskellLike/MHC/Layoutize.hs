@@ -192,8 +192,8 @@ initLayoutState :: [Keyword] -> LayoutState
 initLayoutState layoutKeywords =
   let
     control = Zero NonEmpty.:| []
-    context = [1]
-    indentLevel = 1
+    context = []
+    indentLevel = 0
   in
     LayoutState{control, context, indentLevel, layoutKeywords}
 
