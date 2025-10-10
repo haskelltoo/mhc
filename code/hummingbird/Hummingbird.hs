@@ -31,18 +31,18 @@ data HbTerm binder ty
   | Match [HbAlt binder ty]
   | Quoted (HbTerm binder ty)
   | Concat [HbTerm binder ty]
-  deriving Show
+  deriving (Show)
 
 -- |
 
 data HbAlt binder ty
   = LitAlt HbLiteral (HbTerm binder ty)
-  deriving Show
+  deriving (Show)
 
 -- |
 
 data HbBind binder ty = Bind binder (HbTerm binder ty)
-  deriving Show
+  deriving (Show)
 
 instance (Pretty binder, Pretty ty) => Pretty (HbTerm binder ty) where
   pretty term = case term of
@@ -87,7 +87,7 @@ data HbLiteral
   = CharLit   Char
   | IntLit    Integer
   | StringLit Text
-  deriving Show
+  deriving (Show)
 
 instance Pretty HbLiteral where
   pretty lit = case lit of
@@ -103,7 +103,7 @@ data HbType binder ty
   | VarTy binder
   | FunTy (HbType binder ty) (HbType binder ty)
   | ConcatTy [HbType binder ty]
-  deriving Show
+  deriving (Show)
 
 instance (Pretty binder, Pretty ty) => Pretty (HbType binder ty) where
   pretty ty = case ty of
@@ -132,14 +132,14 @@ instance (Pretty binder, Pretty ty) => Pretty (HbType binder ty) where
 -- |
 
 data HbMod binder ty = HbMod binder [Feather binder ty]
-  deriving Show
+  deriving (Show)
 
 -- |
 
 data Feather binder ty
   = Defn (HbBind binder ty)
   | Sig binder (HbType binder ty)
-  deriving Show
+  deriving (Show)
 
 instance (Pretty binder, Pretty ty) => Pretty (HbMod binder ty) where
   pretty hbMod = case hbMod of
