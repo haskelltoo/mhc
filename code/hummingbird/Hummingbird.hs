@@ -17,7 +17,6 @@ module Hummingbird
   ) where
 
 import Prelude
-import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
 
 -- |
