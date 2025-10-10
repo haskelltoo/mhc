@@ -16,7 +16,7 @@ module Hummingbird
   Feather (..),
   ) where
 
-import Prelude.GHC
+import Prelude
 import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
 

@@ -22,6 +22,23 @@ let
   built = buildHaskell {
     inputs = self: [
       {
+        name = "boot";
+        version = "0";
+        src = ./code/boot;
+
+        buildInputs = hackage: with hackage; [
+          base
+          containers
+          hashable
+          monad-chronicle
+          parsec
+          prettyprinter
+          text
+          transformers
+          unordered-containers
+        ];
+      }
+      {
         name = "hanjiru";
         version = "0";
         src = ./code/hanjiru;
@@ -70,12 +87,8 @@ let
         src = ./code/hummingbird;
 
         buildInputs = hackage: with hackage; [
-          base
-          containers
+          self.boot
           self.haskell-like-mhc
-          parsec
-          text
-          transformers
         ];
 
         license = licenses.bsd3;

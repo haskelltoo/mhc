@@ -4,19 +4,18 @@
 
 module Hummingbird.MHC.Parse where
 
-import Applicative
-import Monad
-import Prelude.GHC
+import Hummingbird
+import Hummingbird.MHC.Parsec
+
+import Prelude
 
 import HaskellLike.MHC.Frontend
 import HaskellLike.MHC.Located
+import HaskellLike.MHC.Name
 import HaskellLike.MHC.Parsec qualified as Parsec
 import HaskellLike.MHC.Token qualified as Token
 
-import Hummingbird
-import Hummingbird.MHC.Name
-
-import Hummingbird.MHC.Parsec
+type Name = Unqualified
 
 hummingbirdP :: P (HbMod Name ())
 hummingbirdP = do

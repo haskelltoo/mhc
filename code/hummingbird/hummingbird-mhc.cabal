@@ -12,50 +12,8 @@ library
     Hummingbird.MHC.Parsec
   hs-source-dirs: .
   build-depends:
-    , base ^>= 4.20
-    , containers
-    , hashable
+    , boot-mhc
     , haskell-like-mhc
-    , parsec
-    , prettyprinter
-    , text
-    , transformers
-    , unordered-containers
-  mixins:
-    base
-      (Control.Applicative as Applicative,
-       Control.Monad as Monad,
-       Data.Foldable as Foldable,
-       Data.Functor as Functor,
-       Data.Functor.Identity as Identity,
-       Prelude as Prelude.GHC),
-    base hiding
-      (Control.Applicative,
-       Control.Monad,
-       Data.Foldable,
-       Data.Functor,
-       Data.Functor.Identity,
-       Prelude),
-    containers
-      (Data.Map as Map.GHC,
-       Data.Set as Set.GHC),
-    hashable
-      (Data.Hashable as Hashable),
-    parsec
-      (Text.Parsec as Parsec,
-       Text.Parsec.Pos as Parsec.Pos),
-    text
-      (Data.Text as Text.GHC),
-    transformers
-      (Control.Monad.Trans.Class as Monad.Ross,
-       Control.Monad.Trans.Reader as Monad.Ross.Reader,
-       Control.Monad.Trans.State as Monad.Ross.State,
-       Control.Monad.Trans.Writer as Monad.Ross.Writer),
-    unordered-containers
-      (Data.HashMap.Lazy as HashMap.Lazy,
-       Data.HashMap.Strict as HashMap.Strict,
-       Data.HashSet as HashSet),
-    
   default-language: Haskell2010
   default-extensions:
     FlexibleContexts
