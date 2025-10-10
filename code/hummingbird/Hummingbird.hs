@@ -2,7 +2,7 @@ module Hummingbird
   (
   -- * Hummingbird
   -- | I am Hummingbird, a small concatenative programming language.
-  
+
   -- * Terms
   HbTerm (..),
   HbAlt (..),
@@ -20,18 +20,32 @@ import Prelude
 import Prettyprinter (Pretty (..))
 import Prettyprinter qualified as Pretty
 
+-- |
+
 data HbTerm binder ty
   = Word binder
-  | Lit Literal
+  | Lit HbLiteral
   | Lambda binder (HbTerm binder ty)
   | Match [HbAlt binder ty]
   | Quoted (HbTerm binder ty)
   | Concat [HbTerm binder ty]
   deriving Show
 
-data HbAlt binder ty
-  = LitAlt Literal (HbTerm binder ty)
+-- |
+
+data HbLiteral
+  = CharLit Char
+  | IntLit Integer
+  | StringLit Text
   deriving Show
+
+-- |
+
+data HbAlt binder ty
+  = LitAlt HbLiteral (HbTerm binder ty)
+  deriving Show
+
+-- |
 
 data HbBind binder ty = Bind binder (HbTerm binder ty)
   deriving Show
@@ -57,6 +71,12 @@ instance (Pretty binder, Pretty ty) => Pretty (HbTerm binder ty) where
     Concat xs ->
       Pretty.hsep $ map pretty xs
 
+instance Pretty HbLiteral where
+  pretty lit = case lit of
+    CharLit char -> pretty char
+    IntLit int -> pretty int
+    StringLit string -> pretty string
+
 instance (Pretty binder, Pretty ty) => Pretty (HbAlt binder ty) where
   pretty alt = case alt of
     LitAlt literal term ->
@@ -73,7 +93,7 @@ instance (Pretty binder, Pretty ty) => Pretty (HbBind binder ty) where
       Pretty.hsep
         [pretty name, Pretty.equals, pretty body]
 
-type Literal = Integer
+-- |
 
 data HbType binder ty
   = StackTy binder [HbType binder ty]
@@ -107,10 +127,12 @@ instance (Pretty binder, Pretty ty) => Pretty (HbType binder ty) where
     ConcatTy tys ->
       Pretty.hsep $ map pretty tys
 
+-- |
+
 data HbMod binder ty = HbMod binder [Feather binder ty]
   deriving Show
 
--- | 'Feather's are the topmost fragments of a Hummingbird program.
+-- |
 
 data Feather binder ty
   = Defn (HbBind binder ty)
