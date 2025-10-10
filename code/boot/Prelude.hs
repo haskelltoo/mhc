@@ -112,6 +112,7 @@ module Prelude
   Char,
   Show (..),
   String,
+  Text,
   lines,
   words,
   unlines,
@@ -239,3 +240,4 @@ import Data.List
 import Data.Maybe
 import Data.Monoid
 import Data.Ord
+import Data.Text (Text)
