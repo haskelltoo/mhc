@@ -1,7 +1,9 @@
 module Hummingbird
   (
   -- * Hummingbird
+
   -- | I am Hummingbird, a small concatenative programming language.
+  --
 
   -- * Terms
   HbTerm (..),
@@ -16,7 +18,7 @@ module Hummingbird
 
   -- * Declarations
   HbMod (..),
-  Feather (..),
+  HbFeather (..),
   ) where
 
 import Prelude
@@ -131,12 +133,12 @@ instance (Pretty binder, Pretty ty) => Pretty (HbType ty binder) where
 
 -- |
 
-data HbMod ty binder = HbMod binder [Feather ty binder]
+data HbMod ty binder = HbMod binder [HbFeather ty binder]
   deriving (Show)
 
 -- |
 
-data Feather ty binder
+data HbFeather ty binder
   = Defn (HbBind ty binder)
   | Sig binder (HbType ty binder)
   deriving (Show)
@@ -154,7 +156,7 @@ instance (Pretty binder, Pretty ty) => Pretty (HbMod ty binder) where
         , Pretty.vcat $ pretty <$> feathers
         ]
 
-instance (Pretty binder, Pretty ty) => Pretty (Feather ty binder) where
+instance (Pretty binder, Pretty ty) => Pretty (HbFeather ty binder) where
   pretty feather = case feather of
     Defn bind -> pretty bind
     Sig name ty ->

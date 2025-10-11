@@ -24,7 +24,7 @@ hummingbirdP = do
   expect Token.Begin
   HbMod modName <$> many (featherP <* expect Token.Newline)
 
-featherP :: P (Feather () Name)
+featherP :: P (HbFeather () Name)
 featherP = do
   name <- nameP
   choice
