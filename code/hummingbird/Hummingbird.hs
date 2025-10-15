@@ -21,8 +21,12 @@ module Hummingbird
   HbFeather (..),
   ) where
 
+import Foldable
+import Monoid
 import Prelude
 import Prettyprinter qualified as Pretty
+import Semigroup
+import Traversable
 
 -- |
 
@@ -34,6 +38,26 @@ data HbTerm ty binder
   | Quoted (HbTerm ty binder)
   | Concat [HbTerm ty binder]
   deriving (Show)
+
+instance Monoid (HbTerm ty binder) where
+  mconcat = catTerms
+  
+instance Semigroup (HbTerm ty binder) where
+  sconcat = catTerms . toList
+
+-- |
+
+catTerms :: [HbTerm ty binder] -> HbTerm ty binder
+catTerms = \case
+  [term]  -> term
+  terms   -> Concat $ concatMap uncatTerms terms
+
+-- |
+
+uncatTerms :: HbTerm ty binder -> [HbTerm ty binder]
+uncatTerms = \case
+  Concat xs -> xs
+  term      -> [term]
 
 -- |
 
