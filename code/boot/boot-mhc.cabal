@@ -39,6 +39,7 @@ library
     , Data.HashMap.Lazy as HashMap.Lazy
     , Data.HashMap.Strict as HashMap.Strict
     , Data.Int as Int
+    , Data.IntMap as IntMap
     , Data.IORef as IO.Ref
     , Data.Kind as Kind
     , Data.List as List
