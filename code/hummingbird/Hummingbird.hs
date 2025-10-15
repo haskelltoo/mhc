@@ -47,7 +47,7 @@ data HbBind ty binder = Bind binder (HbTerm ty binder)
   deriving (Show)
 
 instance (Pretty binder, Pretty ty) => Pretty (HbTerm ty binder) where
-  pretty term = case term of
+  pretty = \case
     Word word -> pretty word
     Lit literal -> pretty literal
     Lambda arg body ->
@@ -68,7 +68,7 @@ instance (Pretty binder, Pretty ty) => Pretty (HbTerm ty binder) where
       Pretty.hsep $ map pretty xs
 
 instance (Pretty binder, Pretty ty) => Pretty (HbAlt ty binder) where
-  pretty alt = case alt of
+  pretty = \case
     LitAlt literal term ->
       Pretty.hsep
         [
@@ -78,7 +78,7 @@ instance (Pretty binder, Pretty ty) => Pretty (HbAlt ty binder) where
         ]
 
 instance (Pretty binder, Pretty ty) => Pretty (HbBind ty binder) where
-  pretty bind = case bind of
+  pretty = \case
     Bind name body ->
       Pretty.hsep
         [pretty name, Pretty.equals, pretty body]
@@ -92,7 +92,7 @@ data HbLiteral
   deriving (Show)
 
 instance Pretty HbLiteral where
-  pretty lit = case lit of
+  pretty = \case
     CharLit char -> pretty char
     IntLit int -> pretty int
     StringLit string -> pretty string
@@ -108,7 +108,7 @@ data HbType ty binder
   deriving (Show)
 
 instance (Pretty binder, Pretty ty) => Pretty (HbType ty binder) where
-  pretty ty = case ty of
+  pretty = \case
     StackTy name tys ->
       Pretty.hsep $
         [
@@ -144,7 +144,7 @@ data HbFeather ty binder
   deriving (Show)
 
 instance (Pretty binder, Pretty ty) => Pretty (HbMod ty binder) where
-  pretty hbMod = case hbMod of
+  pretty = \case
     HbMod name feathers ->
       Pretty.vcat
         [
@@ -157,7 +157,7 @@ instance (Pretty binder, Pretty ty) => Pretty (HbMod ty binder) where
         ]
 
 instance (Pretty binder, Pretty ty) => Pretty (HbFeather ty binder) where
-  pretty feather = case feather of
+  pretty = \case
     Defn bind -> pretty bind
     Sig name ty ->
       Pretty.hsep
