@@ -22,6 +22,10 @@ library
     , Control.Monad.ST as ST
     , Control.Monad.ST.Unsafe as ST.Unsafe
     , Control.Monad.Trans.Class as Monad.Trans
+    , Control.Monad.Trans.Cont as Monad.Cont
+    , Control.Monad.Trans.Except as Monad.Except
+    , Control.Monad.Trans.Identity as Monad.Identity
+    , Control.Monad.Trans.Maybe as Monad.Maybe
     , Control.Monad.Trans.Reader as Monad.Reader
     , Control.Monad.Trans.State as Monad.State
     , Control.Monad.Trans.Writer as Monad.Writer
