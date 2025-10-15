@@ -42,10 +42,10 @@ library
     , Data.IORef as IO.Ref
     , Data.Kind as Kind
     , Data.List as List
+    , Data.List.NonEmpty as List.NonEmpty
     , Data.Map as Map
     , Data.Maybe as Maybe
     , Data.Monoid as Monoid
-    , Data.List.NonEmpty as NonEmpty.List
     , Data.Proxy as Proxy
     , Data.Semigroup as Semigroup
     , Data.Set as Set
