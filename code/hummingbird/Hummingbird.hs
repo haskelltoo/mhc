@@ -1,51 +1,84 @@
 module Hummingbird
-  (
+(
   -- * Hummingbird
+
   -- | I am Hummingbird, a small concatenative programming language.
+  --
 
   -- * Terms
+
   HbTerm (..),
   HbAlt (..),
   HbBind (..),
 
   -- * Literals
+
   HbLiteral (..),
 
   -- * Types
+
   HbType (..),
 
   -- * Declarations
-  HbMod (..),
-  Feather (..),
-  ) where
 
+  HbMod (..),
+  HbFeather (..),
+)
+where
+
+import Foldable
+import Monoid
 import Prelude
 import Prettyprinter qualified as Pretty
+import Semigroup
+import Traversable
+
+-- | I concatenate!
+
+instance Monoid (HbTerm ty binder) where
+  mconcat = catTerms
 
 -- |
 
-data HbTerm binder ty
+data HbTerm ty binder
   = Word binder
   | Lit HbLiteral
-  | Lambda binder (HbTerm binder ty)
-  | Match [HbAlt binder ty]
-  | Quoted (HbTerm binder ty)
-  | Concat [HbTerm binder ty]
+  | Lambda binder (HbTerm ty binder)
+  | Match [HbAlt ty binder]
+  | Quoted (HbTerm ty binder)
+  | Concat [HbTerm ty binder]
+  deriving (Show)
+
+instance Semigroup (HbTerm ty binder) where
+  sconcat = catTerms . toList
+
+-- |
+
+catTerms :: [HbTerm ty binder] -> HbTerm ty binder
+catTerms = \case
+  [term]  -> term
+  terms   -> Concat $ concatMap uncatTerms terms
+
+-- |
+
+uncatTerms :: HbTerm ty binder -> [HbTerm ty binder]
+uncatTerms = \case
+  Concat xs -> xs
+  term      -> [term]
+
+-- |
+
+data HbAlt ty binder
+  = LitAlt HbLiteral (HbTerm ty binder)
   deriving (Show)
 
 -- |
 
-data HbAlt binder ty
-  = LitAlt HbLiteral (HbTerm binder ty)
+data HbBind ty binder = Bind binder (HbTerm ty binder)
   deriving (Show)
 
--- |
-
-data HbBind binder ty = Bind binder (HbTerm binder ty)
-  deriving (Show)
-
-instance (Pretty binder, Pretty ty) => Pretty (HbTerm binder ty) where
-  pretty term = case term of
+instance (Pretty binder, Pretty ty) => Pretty (HbTerm ty binder) where
+  pretty = \case
     Word word -> pretty word
     Lit literal -> pretty literal
     Lambda arg body ->
@@ -65,8 +98,8 @@ instance (Pretty binder, Pretty ty) => Pretty (HbTerm binder ty) where
     Concat xs ->
       Pretty.hsep $ map pretty xs
 
-instance (Pretty binder, Pretty ty) => Pretty (HbAlt binder ty) where
-  pretty alt = case alt of
+instance (Pretty binder, Pretty ty) => Pretty (HbAlt ty binder) where
+  pretty = \case
     LitAlt literal term ->
       Pretty.hsep
         [
@@ -75,8 +108,8 @@ instance (Pretty binder, Pretty ty) => Pretty (HbAlt binder ty) where
         , pretty term
         ]
 
-instance (Pretty binder, Pretty ty) => Pretty (HbBind binder ty) where
-  pretty bind = case bind of
+instance (Pretty binder, Pretty ty) => Pretty (HbBind ty binder) where
+  pretty = \case
     Bind name body ->
       Pretty.hsep
         [pretty name, Pretty.equals, pretty body]
@@ -90,23 +123,23 @@ data HbLiteral
   deriving (Show)
 
 instance Pretty HbLiteral where
-  pretty lit = case lit of
+  pretty = \case
     CharLit char -> pretty char
     IntLit int -> pretty int
     StringLit string -> pretty string
 
 -- |
 
-data HbType binder ty
-  = StackTy binder [HbType binder ty]
+data HbType ty binder
+  = StackTy binder [HbType ty binder]
   | ConTy binder
   | VarTy binder
-  | FunTy (HbType binder ty) (HbType binder ty)
-  | ConcatTy [HbType binder ty]
+  | FunTy (HbType ty binder) (HbType ty binder)
+  | ConcatTy [HbType ty binder]
   deriving (Show)
 
-instance (Pretty binder, Pretty ty) => Pretty (HbType binder ty) where
-  pretty ty = case ty of
+instance (Pretty binder, Pretty ty) => Pretty (HbType ty binder) where
+  pretty = \case
     StackTy name tys ->
       Pretty.hsep $
         [
@@ -131,18 +164,18 @@ instance (Pretty binder, Pretty ty) => Pretty (HbType binder ty) where
 
 -- |
 
-data HbMod binder ty = HbMod binder [Feather binder ty]
+data HbMod ty binder = HbMod binder [HbFeather ty binder]
   deriving (Show)
 
 -- |
 
-data Feather binder ty
-  = Defn (HbBind binder ty)
-  | Sig binder (HbType binder ty)
+data HbFeather ty binder
+  = Defn (HbBind ty binder)
+  | Sig binder (HbType ty binder)
   deriving (Show)
 
-instance (Pretty binder, Pretty ty) => Pretty (HbMod binder ty) where
-  pretty hbMod = case hbMod of
+instance (Pretty binder, Pretty ty) => Pretty (HbMod ty binder) where
+  pretty = \case
     HbMod name feathers ->
       Pretty.vcat
         [
@@ -154,8 +187,8 @@ instance (Pretty binder, Pretty ty) => Pretty (HbMod binder ty) where
         , Pretty.vcat $ pretty <$> feathers
         ]
 
-instance (Pretty binder, Pretty ty) => Pretty (Feather binder ty) where
-  pretty feather = case feather of
+instance (Pretty binder, Pretty ty) => Pretty (HbFeather ty binder) where
+  pretty = \case
     Defn bind -> pretty bind
     Sig name ty ->
       Pretty.hsep

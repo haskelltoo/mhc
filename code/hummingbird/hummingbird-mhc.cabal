@@ -8,8 +8,11 @@ build-type: Simple
 library
   exposed-modules:
     Hummingbird
+    Hummingbird.MHC.Builtin
     Hummingbird.MHC.Parse
     Hummingbird.MHC.Parsec
+    Hummingbird.MHC.Rename
+    Hummingbird.MHC.Var
   hs-source-dirs: .
   build-depends:
     , boot-mhc
@@ -20,6 +23,7 @@ library
     FlexibleInstances
     ImportQualifiedPost
     KindSignatures
+    LambdaCase
     MultiParamTypeClasses
     NoImplicitPrelude
     NoStarIsType
