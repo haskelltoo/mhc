@@ -28,6 +28,11 @@ import Prettyprinter qualified as Pretty
 import Semigroup
 import Traversable
 
+-- | I concatenate!
+
+instance Monoid (HbTerm ty binder) where
+  mconcat = catTerms
+
 -- |
 
 data HbTerm ty binder
@@ -39,9 +44,6 @@ data HbTerm ty binder
   | Concat [HbTerm ty binder]
   deriving (Show)
 
-instance Monoid (HbTerm ty binder) where
-  mconcat = catTerms
-  
 instance Semigroup (HbTerm ty binder) where
   sconcat = catTerms . toList
 
