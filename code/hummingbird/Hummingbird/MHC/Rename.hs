@@ -4,14 +4,6 @@
 
 module Hummingbird.MHC.Rename
   (
-  -- * Variables
-  Var (..),
-  InScope,
-  freshen,
-  freshenNoShadowing,
-  withFresh,
-  withFreshNoShadowing,
-
   -- * Renaming
   renameVar,
   renameTerm,
@@ -21,73 +13,35 @@ module Hummingbird.MHC.Rename
   renameRhs,
   RenameMessage (..),
 
+  -- * Creating variables
+  freshen,
+  freshenNoShadowing,
+  withFresh,
+  withFreshNoShadowing,
+
   -- * Rename monad
   RenameM,
   runRename,
   ) where
 
-import Map (Map)
 import Map qualified
 import Monad.Chronicle
 import Monad.State
 import Monad.Trans
 import Prelude
 import Prettyprinter qualified as Pretty
+import Semigroup
 import These
 import Traversable
 
-import HaskellLike.MHC.Name
 import Hummingbird
-import Hummingbird.MHC.Parse (Name)
-
--- |
-
-data Var = Var Name Int
-  deriving (Show)
-
-instance Pretty Var where
-  pretty = \case
-    Var name i ->
-      pretty name <> pretty '_' <> pretty i
-
-instance Eq Var where
-  Var _ i == Var _ j = i == j
-
-instance Ord Var where
-  compare (Var _ i) (Var _ j) = compare i j
-
--- |
-
-type InScope = Map Name Var
-
--- |
-
-freshen :: Name -> RenameM Var
-freshen name = Var name <$> createFreshId
-
--- |
-
-withFresh :: Name -> InScope -> (Var -> InScope -> RenameM a) -> RenameM a
-withFresh name inScope k = do
-  var <- freshen name
-  k var (Map.insert name var inScope)
-
--- |
-
-freshenNoShadowing :: Name -> InScope -> RenameM Var
-freshenNoShadowing name inScope =
-  case Map.lookup name inScope of
-    Nothing ->
-      freshen name
-    Just other ->
-      confess $ Ambiguous name other
-
--- |
-
-withFreshNoShadowing :: Name -> InScope -> (Var -> InScope -> RenameM a) -> RenameM a
-withFreshNoShadowing name inScope k = do
-  var <- freshenNoShadowing name inScope
-  k var (Map.insert name var inScope)
+import Hummingbird.MHC.Var (
+    Var (..),
+    Name,
+    InScope,
+    VarMap,
+  )
+import Hummingbird.MHC.Var qualified as Var
 
 -- |
 
@@ -109,6 +63,7 @@ data RenameMessage
 
 instance Semigroup RenameMessage where
   a <> b = catMessages [a, b]
+  sconcat = catMessages . toList
 
 -- |
 
@@ -151,10 +106,11 @@ renameAlt = error "renameAlt: not yet implemented"
 
 -- |
 
-renameBinds :: InScope -> [HbBind () Name] -> RenameM [HbBind () Var]
+renameBinds :: InScope -> [HbBind () Name] -> RenameM (InScope, [HbBind () Var])
 renameBinds inScope binds = do
   (inScope', freshened) <- mapAccumM renameLhs inScope binds
-  mapM (renameRhs inScope') freshened
+  renamed <- mapM (renameRhs inScope') freshened
+  pure (inScope', renamed)
     
 -- |
 
@@ -169,17 +125,34 @@ renameRhs :: InScope -> (Var, HbTerm () Name) -> RenameM (HbBind () Var)
 renameRhs inScope (bndr, body) =
   Bind bndr <$> renameTerm inScope body
 
-createFreshId :: RenameM Int
-createFreshId = do
-  i <- getFreshId
-  modifyFreshId (+ 1)
-  pure i
+-- |
 
-getFreshId :: RenameM Int
-getFreshId = freshId <$> getRnState
+freshen :: Name -> RenameM Var
+freshen name = Var name <$> createFreshId
 
-modifyFreshId :: (Int -> Int) -> RenameM ()
-modifyFreshId f = modifyRnState $ \s -> s { freshId = f $ freshId s }
+-- |
+
+withFresh :: Name -> InScope -> (Var -> InScope -> RenameM a) -> RenameM a
+withFresh name inScope k = do
+  var <- freshen name
+  k var (Map.insert name var inScope)
+
+-- |
+
+freshenNoShadowing :: Name -> InScope -> RenameM Var
+freshenNoShadowing name inScope =
+  case Map.lookup name inScope of
+    Nothing ->
+      freshen name
+    Just other ->
+      confess $ Ambiguous name other
+
+-- |
+
+withFreshNoShadowing :: Name -> InScope -> (Var -> InScope -> RenameM a) -> RenameM a
+withFreshNoShadowing name inScope k = do
+  var <- freshenNoShadowing name inScope
+  k var (Map.insert name var inScope)
 
 -- |
 
@@ -193,8 +166,17 @@ deriving instance MonadChronicle RenameMessage RenameM
 
 -- |
 
-runRename :: RenameM a -> These RenameMessage a
-runRename (RenameM m) = evalState (runChronicleT m) initRnState
+runRename :: InScope -> (InScope -> RenameM a) -> These RenameMessage a
+runRename inScope k =
+  evalState
+    (runChronicleT $ unRename $ k inScope)
+    (initRnState $ length inScope)
+
+createFreshId :: RenameM Int
+createFreshId = do
+  i <- getFreshId
+  modifyFreshId (+ 1)
+  pure i
 
 data RenameState = RenameState
   {
@@ -204,12 +186,17 @@ data RenameState = RenameState
 getRnState :: RenameM RenameState
 getRnState = RenameM (lift get)
 
+getFreshId :: RenameM Int
+getFreshId = freshId <$> getRnState
+
+modifyFreshId :: (Int -> Int) -> RenameM ()
+modifyFreshId f = modifyRnState $ \s -> s { freshId = f $ freshId s }
+
 modifyRnState :: (RenameState -> RenameState) -> RenameM ()
 modifyRnState f = RenameM (lift $ modify f)
 
-initRnState :: RenameState
-initRnState =
+initRnState :: Int -> RenameState
+initRnState freshId =
   let
-    freshId = 0
   in
     RenameState{..}
