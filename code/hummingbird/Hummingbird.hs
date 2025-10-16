@@ -1,25 +1,30 @@
 module Hummingbird
-  (
+(
   -- * Hummingbird
 
   -- | I am Hummingbird, a small concatenative programming language.
   --
 
   -- * Terms
+
   HbTerm (..),
   HbAlt (..),
   HbBind (..),
 
   -- * Literals
+
   HbLiteral (..),
 
   -- * Types
+
   HbType (..),
 
   -- * Declarations
+
   HbMod (..),
   HbFeather (..),
-  ) where
+)
+where
 
 import Foldable
 import Monoid
